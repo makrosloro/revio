@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # Dependencias de Python
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Madrid"
+    open-pull-requests-limit: 5
+    labels: ["chore", "dependencies"]
+    commit-message:
+      prefix: "chore(deps)"
+    ignore:
+      # Ignorar major versions — actualizar manualmente con revisión
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Madrid"
+    labels: ["chore", "dependencies"]
+    commit-message:
+      prefix: "chore(ci)"
