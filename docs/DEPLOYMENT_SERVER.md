@@ -1,7 +1,7 @@
-# Despliegue en Servidor Dedicado — Guía Completa
+# Despliegue en VPS Hetzner Cloud — Guía Completa
 
-> Activar esta guía cuando el MRR justifique el coste del servidor (~50+ clientes).
-> Coste estimado: 20-40€/mes en Hetzner o Contabo (4 vCPU, 8GB RAM, 80GB SSD).
+> VPS Hetzner CX22 (2 vCPU, 4 GB RAM, 40 GB SSD, ~4,35€/mes).
+> Dominio negociosano.com gestionado en Cloudflare.
 
 ## Arquitectura objetivo
 
@@ -14,15 +14,15 @@ GitHub (código)
                     │
                     ▼
          GitHub Container Registry (GHCR)
-         ghcr.io/TU_USUARIO/revio:vX.Y.Z
+         ghcr.io/TU_USUARIO/negociosano:vX.Y.Z
                     │
              SSH deploy al servidor
                     │
                     ▼
          Servidor dedicado Ubuntu 24.04
          ├── Caddy (reverse proxy + TLS automático)
-         ├── Docker: revio_app
-         ├── Docker: revio_db (PostgreSQL)
+         ├── Docker: negociosano_app
+         ├── Docker: negociosano_db (PostgreSQL)
          └── Docker: redis (Celery — fase 2)
 ```
 
@@ -55,15 +55,15 @@ usermod -aG docker deploy
 
 ```bash
 # En tu máquina local
-ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/revio_deploy
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/negociosano_deploy
 
 # Clave PÚBLICA → pegar en authorized_keys del servidor
-cat ~/.ssh/revio_deploy.pub
+cat ~/.ssh/negociosano_deploy.pub
 # En servidor: echo "CLAVE_PUBLICA" >> /home/deploy/.ssh/authorized_keys
 
 # Clave PRIVADA → GitHub → Settings → Secrets → Actions → New secret
 # Name: SERVER_SSH_KEY / Value: contenido de la clave privada
-cat ~/.ssh/revio_deploy
+cat ~/.ssh/negociosano_deploy
 ```
 
 ### 3. Secrets de GitHub requeridos
@@ -72,7 +72,7 @@ cat ~/.ssh/revio_deploy
 SERVER_HOST          → IP o dominio del servidor
 SERVER_USER          → deploy
 SERVER_SSH_KEY       → clave privada Ed25519
-SERVER_PROJECT_PATH  → /home/deploy/revio
+SERVER_PROJECT_PATH  → /home/deploy/negociosano
 GHCR_TOKEN           → GitHub PAT con permisos packages:write
 ```
 
@@ -104,7 +104,7 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: revio
+      POSTGRES_DB: negociosano
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
@@ -121,7 +121,7 @@ services:
     networks: [internal]
 
   app:
-    image: ghcr.io/TU_USUARIO/revio:${APP_VERSION:-latest}
+    image: ghcr.io/TU_USUARIO/negociosano:${APP_VERSION:-latest}
     restart: unless-stopped
     depends_on:
       db:
@@ -134,7 +134,7 @@ services:
     networks: [internal]
 
   worker:
-    image: ghcr.io/TU_USUARIO/revio:${APP_VERSION:-latest}
+    image: ghcr.io/TU_USUARIO/negociosano:${APP_VERSION:-latest}
     restart: unless-stopped
     command: celery -A app.worker worker --loglevel=info
     depends_on: [db, redis]
@@ -176,13 +176,13 @@ git push origin main && git push origin --tags
 #!/bin/bash
 # /home/deploy/scripts/backup.sh — cron diario 3:00 AM
 DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/home/deploy/revio/backups"
+BACKUP_DIR="/home/deploy/negociosano/backups"
 
-docker exec revio-db-1 pg_dump -U postgres revio \
-  | gzip > "$BACKUP_DIR/revio_$DATE.sql.gz"
+docker exec negociosano-db-1 pg_dump -U postgres negociosano \
+  | gzip > "$BACKUP_DIR/negociosano_$DATE.sql.gz"
 
 # Opcional: sincronizar a almacenamiento externo
-# rclone copy "$BACKUP_DIR/revio_$DATE.sql.gz" b2:revio-backups/
+# rclone copy "$BACKUP_DIR/negociosano_$DATE.sql.gz" b2:negociosano-backups/
 
 find $BACKUP_DIR -name "*.sql.gz" -mtime +7 -delete
 ```
@@ -193,7 +193,7 @@ find $BACKUP_DIR -name "*.sql.gz" -mtime +7 -delete
 
 ```bash
 ssh deploy@IP_SERVIDOR
-cd /home/deploy/revio
+cd /home/deploy/negociosano
 
 # Rollback a versión anterior
 export APP_VERSION=v1.1.0

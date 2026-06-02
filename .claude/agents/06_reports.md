@@ -18,19 +18,19 @@ Queries para el período dado (date_from, date_to) filtradas siempre por busines
 - `get_rating_average(business_id, user_id, date_from, date_to)` → float
 - `get_reviews_by_rating(business_id, user_id, date_from, date_to)` → dict {1: N, 2: N, ...5: N}
 - `get_reviews_count(business_id, user_id, date_from, date_to)` → int
-- `get_avg_vs_previous_week(business_id, user_id)` → tuple(float_this, float_prev)
+- `get_avg_vs_pnegociosanous_week(business_id, user_id)` → tuple(float_this, float_prev)
 - `get_worst_reviews(business_id, user_id, date_from, date_to, limit=3)` → List[Review]
 
 ### 2. Generador de PDF (app/services/report_service.py)
 Usar `reportlab` (añadir a requirements.txt). Función `generate_weekly_report(user, businesses, week_stats) → bytes`.
 
 Estructura del PDF (A4, márgenes 2cm):
-- **Cabecera:** Logo/nombre Revio, período del informe, nombre del negocio
+- **Cabecera:** Logo/nombre NegocioSano, período del informe, nombre del negocio
 - **Resumen ejecutivo:** media actual, variación vs semana anterior (↑↓), total reseñas nuevas
 - **Distribución de ratings:** barra simple en texto (★★★★★ ▓▓▓▓▓░░░░░ 60%)
 - **Top 3 peores reseñas:** texto truncado a 150 chars, fecha, plataforma
 - **Recomendación:** 1 frase generada según los datos ("Esta semana la principal queja fue el tiempo de espera")
-- **Pie:** "Generado por Revio · Próximo informe el lunes"
+- **Pie:** "Generado por NegocioSano · Próximo informe el lunes"
 
 Si el usuario tiene Plan Multi con varios negocios: un bloque por negocio en el mismo PDF.
 

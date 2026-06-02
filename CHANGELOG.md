@@ -1,4 +1,4 @@
-# Changelog — Revio
+# Changelog — NegocioSano
 
 Todos los cambios notables del proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).

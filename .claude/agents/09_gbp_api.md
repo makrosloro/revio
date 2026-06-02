@@ -9,20 +9,20 @@ description: Usar para construir la integración con Google Business Profile API
 Agentes 01-06 completados y estables. Al menos 20 clientes activos en plan Multi. OAuth de Google configurado en Google Cloud Console.
 
 ## Objetivo
-Los usuarios del plan Multi pueden publicar sus respuestas directamente en Google Maps con un solo botón desde Telegram, sin tener que abrir el navegador ni el panel de Google. Es el diferenciador más potente de Revio y el principal argumento de venta del plan Multi.
+Los usuarios del plan Multi pueden publicar sus respuestas directamente en Google Maps con un solo botón desde Telegram, sin tener que abrir el navegador ni el panel de Google. Es el diferenciador más potente de NegocioSano y el principal argumento de venta del plan Multi.
 
 ---
 
 ## Flujo completo de publicación
 
 ```
-1. Revio detecta reseña negativa en Google Maps
+1. NegocioSano detecta reseña negativa en Google Maps
 2. Bot envía alerta a Telegram con borrador de respuesta
 3. Mensaje incluye tres botones inline:
    [✅ Publicar en Google] [✏️ Editar borrador] [❌ Descartar]
 
 4a. Si pulsa [✅ Publicar en Google]:
-    → Revio llama a GBP API con el borrador
+    → NegocioSano llama a GBP API con el borrador
     → Respuesta publicada en Google en <10 segundos
     → Bot confirma: "✅ Respuesta publicada en Google Maps"
 
@@ -41,12 +41,12 @@ Los usuarios del plan Multi pueden publicar sus respuestas directamente en Googl
 
 ### En Google Cloud Console
 ```bash
-# 1. En el mismo proyecto "Revio" de Google Cloud
+# 1. En el mismo proyecto "NegocioSano" de Google Cloud
 # 2. Activar: My Business Account Management API
 #    Y también: My Business Reviews API  (si está disponible separada)
 # 3. Crear credenciales OAuth 2.0:
 #    Tipo: Aplicación web
-#    URI de redirección autorizado: https://api.tudominio.com/auth/google/callback
+#    URI de redirección autorizado: https://api.negociosano.com/auth/google/callback
 # 4. Guardar CLIENT_ID y CLIENT_SECRET
 ```
 
@@ -54,7 +54,7 @@ Variables de entorno nuevas:
 ```
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=https://api.tudominio.com/auth/google/callback
+GOOGLE_REDIRECT_URI=https://api.negociosano.com/auth/google/callback
 ```
 
 ### Ampliación del modelo Business (migración Alembic)

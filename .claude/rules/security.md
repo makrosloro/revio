@@ -1,4 +1,4 @@
-# Reglas de Seguridad — Revio
+# Reglas de Seguridad — NegocioSano
 
 ## Secretos
 - Ningún secreto en el código fuente ni en el historial de git.

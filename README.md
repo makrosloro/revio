@@ -1,4 +1,4 @@
-# Revio — Monitor de Reputación Online
+# NegocioSano — Reputación Online para tu Negocio
 
 Bot de Telegram que monitoriza reseñas de negocios en Google Maps, TripAdvisor y Booking.com y gestiona la reputación online completa. Las reseñas negativas (≤3★) generan una alerta inmediata con borrador de respuesta generado por IA. Las positivas (≥4★) se agrupan en un resumen diario para no interrumpir el día a día. En el plan Multi, el propietario puede publicar respuestas directamente en Google con un botón desde Telegram.
 
@@ -18,7 +18,7 @@ Bot de Telegram que monitoriza reseñas de negocios en Google Maps, TripAdvisor 
 
 ```bash
 # 1. Clonar y entrar al proyecto
-git clone git@github.com:TU_USUARIO/revio.git && cd revio
+git clone git@github.com:TU_USUARIO/negociosano.git && cd negociosano
 
 # 2. Instalar dependencias
 pip install -r requirements.txt
@@ -48,7 +48,7 @@ stripe listen --forward-to localhost:8000/webhook/stripe
 ## Estructura del proyecto
 
 ```
-revio/
+negociosano/
 ├── app/
 │   ├── main.py              # FastAPI app + lifespan (bot + scheduler)
 │   ├── config.py            # Settings desde .env (pydantic-settings)

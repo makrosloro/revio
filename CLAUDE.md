@@ -1,4 +1,4 @@
-# Revio — Monitor de Reputación Online
+# NegocioSano — Reputación Online para tu Negocio
 
 ## Qué es
 SaaS multi-tenant en Python que monitoriza reseñas de negocios (Google Maps, TripAdvisor, Booking) y gestiona la reputación online completa vía Telegram. Las reseñas negativas (≤3★) generan alerta inmediata con borrador de respuesta. Las positivas (≥4★) se agrupan en un resumen diario. En el plan Multi, el propietario puede publicar respuestas directamente en Google con un botón desde Telegram, vía Google Business Profile API.
@@ -15,7 +15,7 @@ SaaS multi-tenant en Python que monitoriza reseñas de negocios (Google Maps, Tr
 
 ## Estructura del proyecto
 ```
-revio/
+negociosano/
 ├── app/
 │   ├── main.py              # FastAPI app + arranque del bot
 │   ├── config.py            # Settings desde .env (pydantic-settings)
@@ -107,11 +107,12 @@ Cada vez que se completa una tarea significativa (agente, feature, hotfix): actu
 - **Tags:** toda release lleva tag semántico `vMAJOR.MINOR.PATCH` creado por `git flow release finish`.
 
 ## Despliegue
-- **Fase actual:** NAS Synology vía runner auto-hospedado de GitHub Actions (Docker en el NAS). Ver `docs/DEPLOYMENT_NAS.md`.
-- **Fase futura:** servidor dedicado vía GitHub Actions + SSH. Ver `docs/DEPLOYMENT_SERVER.md`.
-- **Migración:** guía paso a paso en `docs/MIGRATION.md`.
-- **Entornos:** `develop` → NAS (staging), `main` → NAS (producción) → servidor (producción futura).
-- **Secrets de GitHub:** `NAS_SSH_KEY`, `NAS_HOST`, `NAS_USER`, `NAS_PROJECT_PATH` para despliegue en NAS.
+- **Infraestructura:** VPS Hetzner Cloud CX22 (2 vCPU, 4 GB RAM, Nuremberg EU, ~4,35€/mes) con dominio negociosano.com en Cloudflare.
+- **Subdominio API:** `api.negociosano.com` → Caddy (TLS automático) → app en puerto 8000.
+- **CI/CD:** GitHub Actions. Push a `main` → tests → SSH deploy al VPS. Ver `.github/workflows/deploy.yml`.
+- **Docker Compose:** `docker-compose.yml` para desarrollo local, `docker-compose.prod.yml` para el VPS.
+- **Secrets de GitHub:** `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, `VPS_PROJECT_PATH`, `TELEGRAM_BOT_TOKEN`, `BOT_ADMIN_CHAT_ID`.
+- **Rollback:** `ssh deploy@VPS "cd /home/deploy/negociosano && git checkout vX.Y.Z && docker-compose -f docker-compose.prod.yml up -d app"`.
 
 ## Fases de desarrollo
 - **Fase 1 (MVP):** Google Maps + alertas negativas inmediatas + Stripe + auth multi-tenant

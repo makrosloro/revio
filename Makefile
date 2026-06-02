@@ -1,17 +1,18 @@
-# Makefile — Revio
+# Makefile — NegocioSano
 # Comandos de uso diario para desarrollo y operaciones.
 # Uso: make <comando>
 
 .PHONY: help dev test migrate status logs restart-app backup-db \
         feature release hotfix gitflow-init
 
-COMPOSE_NAS = docker-compose -f docker-compose.nas.yml
-COMPOSE_SERVER = docker-compose -f docker-compose.server.yml
+COMPOSE_LOCAL = docker-compose
+COMPOSE_PROD  = docker-compose -f docker-compose.prod.yml
+VPS           = deploy@$(shell grep VPS_HOST .vps_host 2>/dev/null || echo "IP_DEL_VPS")
 
 # ── Ayuda ────────────────────────────────────────────────
 help:
 	@echo ""
-	@echo "Revio — Comandos disponibles"
+	@echo "NegocioSano — Comandos disponibles disponibles"
 	@echo "──────────────────────────────────────────────"
 	@echo "Desarrollo:"
 	@echo "  make dev              Arrancar entorno de desarrollo local"
@@ -24,11 +25,11 @@ help:
 	@echo "  make migration m=txt  Crear nueva migración (m='descripcion')"
 	@echo "  make backup-db        Backup manual de la BD"
 	@echo ""
-	@echo "Operaciones NAS:"
-	@echo "  make status           Estado de todos los contenedores"
-	@echo "  make logs             Logs de la app en tiempo real"
-	@echo "  make restart-app      Reiniciar solo la app (sin BD)"
-	@echo "  make deploy-nas       Deploy manual al NAS"
+	@echo "Operaciones VPS:"
+	@echo "  make status           Estado de contenedores en VPS"
+	@echo "  make logs             Logs de la app en VPS en tiempo real"
+	@echo "  make restart-app      Reiniciar solo la app en VPS"
+	@echo "  make deploy           Deploy manual al VPS (solo si CI/CD falla)"
 	@echo ""
 	@echo "GitFlow:"
 	@echo "  make gitflow-init     Inicializar GitFlow en el repo"
@@ -71,34 +72,34 @@ backup-db:
 	@echo "Creando backup de la BD..."
 	@TIMESTAMP=$$(date +%Y%m%d_%H%M%S); \
 	mkdir -p ./backups; \
-	docker exec revio-db-1 pg_dump -U postgres revio \
-	  | gzip > "./backups/revio_$$TIMESTAMP.sql.gz"; \
-	echo "✅ Backup: ./backups/revio_$$TIMESTAMP.sql.gz"
+	docker exec negociosano-db-1 pg_dump -U postgres negociosano \
+	  | gzip > "./backups/negociosano_$$TIMESTAMP.sql.gz"; \
+	echo "✅ Backup: ./backups/negociosano_$$TIMESTAMP.sql.gz"
 
-# ── Operaciones NAS ──────────────────────────────────────
+# ── Operaciones VPS ──────────────────────────────────────
 status:
-	$(COMPOSE_NAS) ps
+	ssh $(VPS) "cd /home/deploy/negociosano && $(COMPOSE_PROD) ps"
 
 logs:
-	$(COMPOSE_NAS) logs app --tail=100 -f
+	ssh $(VPS) "cd /home/deploy/negociosano && $(COMPOSE_PROD) logs app --tail=100 -f"
 
 restart-app:
-	@echo "Reiniciando app..."
-	$(COMPOSE_NAS) restart app
-	@sleep 5
-	$(COMPOSE_NAS) ps app
+	@echo "Reiniciando app en VPS..."
+	ssh $(VPS) "cd /home/deploy/negociosano && $(COMPOSE_PROD) restart app"
 	@echo "✅ App reiniciada"
 
-deploy-nas:
-	@echo "⚠️  Deploy manual al NAS — asegúrate de estar en rama main"
+deploy:
+	@echo "⚠️  Deploy manual al VPS — el CI/CD automático es preferible"
 	@git status --short
 	@read -p "¿Continuar? [y/N] " confirm; \
 	if [ "$$confirm" = "y" ]; then \
-	  $(COMPOSE_NAS) build app && \
-	  $(COMPOSE_NAS) up -d app && \
-	  sleep 10 && \
-	  $(COMPOSE_NAS) exec app alembic upgrade head && \
-	  curl -sf http://localhost:8000/health && \
+	  ssh $(VPS) "cd /home/deploy/negociosano && \
+	    git pull origin main && \
+	    $(COMPOSE_PROD) build app && \
+	    $(COMPOSE_PROD) up -d app && \
+	    sleep 15 && \
+	    $(COMPOSE_PROD) exec -T app alembic upgrade head && \
+	    curl -f http://localhost:8000/health" && \
 	  echo "✅ Deploy completado"; \
 	else \
 	  echo "Deploy cancelado"; \

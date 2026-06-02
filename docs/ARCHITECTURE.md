@@ -1,4 +1,4 @@
-# Arquitectura de Revio
+# Arquitectura de NegocioSano
 
 Referencia técnica de cómo está construido el sistema, por qué se tomaron las decisiones principales y cómo fluyen los datos de punta a punta.
 

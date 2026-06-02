@@ -1,4 +1,4 @@
-# Convenciones Python — Revio
+# Convenciones Python — NegocioSano
 
 Aplicar en todos los archivos `.py` del proyecto.
 

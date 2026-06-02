@@ -17,7 +17,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: test_password
-          POSTGRES_DB: revio_test
+          POSTGRES_DB: negociosano_test
         ports:
           - 5432:5432
         options: >-
@@ -41,12 +41,12 @@ jobs:
 
       - name: Verificar migraciones
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:test_password@localhost/revio_test
+          DATABASE_URL: postgresql+asyncpg://postgres:test_password@localhost/negociosano_test
         run: alembic upgrade head
 
       - name: Ejecutar tests
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:test_password@localhost/revio_test
+          DATABASE_URL: postgresql+asyncpg://postgres:test_password@localhost/negociosano_test
           TELEGRAM_BOT_TOKEN: fake_token_for_tests
           GOOGLE_PLACES_API_KEY: fake_key_for_tests
           STRIPE_SECRET_KEY: sk_test_fake

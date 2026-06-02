@@ -1,4 +1,4 @@
-# GitFlow — Revio
+# GitFlow — NegocioSano
 
 Referencia completa del flujo de trabajo. Todos los comandos son los mismos en NAS y en servidor futuro — solo cambia el destino del despliegue.
 
@@ -20,8 +20,8 @@ brew install git-flow-avh          # macOS
 sudo apt install git-flow          # Ubuntu/Debian
 
 # Clonar el repositorio
-git clone git@github.com:TU_USUARIO/revio.git
-cd revio
+git clone git@github.com:TU_USUARIO/negociosano.git
+cd negociosano
 
 # Inicializar GitFlow con los valores por defecto
 git flow init -d

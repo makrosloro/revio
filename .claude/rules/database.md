@@ -1,4 +1,4 @@
-# Reglas de Base de Datos — Revio
+# Reglas de Base de Datos — NegocioSano
 
 ## Aislamiento multi-tenant — CRÍTICO
 

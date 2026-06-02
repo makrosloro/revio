@@ -86,35 +86,17 @@ async def test_business(db_session, test_user):
     return business
 ```
 
-**Mocks de servicios externos:**
+**Mock Google Places (con ambos tipos de reseña):**
 ```python
 @pytest.fixture
 def mock_google_places():
-    """Mock de GooglePlacesClient. Devuelve 3 reseñas ficticias por defecto."""
+    """Mock con mezcla de reseñas negativas y positivas."""
     with patch("app.integrations.google_places.GooglePlacesClient") as mock:
         instance = mock.return_value
         instance.get_reviews = AsyncMock(return_value=[
-            {
-                "review_id": "review_001",
-                "rating": 2,
-                "text": "El servicio fue muy lento y la comida llegó fría.",
-                "author": "María García",
-                "reviewed_at": datetime.utcnow(),
-            },
-            {
-                "review_id": "review_002",
-                "rating": 5,
-                "text": "Excelente experiencia, volveremos sin duda.",
-                "author": "Carlos López",
-                "reviewed_at": datetime.utcnow(),
-            },
-            {
-                "review_id": "review_003",
-                "rating": 1,
-                "text": "Pésimo. Nunca más.",
-                "author": "Ana Martín",
-                "reviewed_at": datetime.utcnow(),
-            },
+            {"review_id": "neg_001", "rating": 2, "text": "Servicio muy lento.", "author": "María G.", "reviewed_at": datetime.utcnow()},
+            {"review_id": "pos_001", "rating": 5, "text": "Excelente, volveremos.", "author": "Carlos L.", "reviewed_at": datetime.utcnow()},
+            {"review_id": "pos_002", "rating": 4, "text": "Muy buena experiencia.", "author": "Ana M.", "reviewed_at": datetime.utcnow()},
         ])
         yield instance
 
@@ -182,8 +164,11 @@ async def client(db_session):
 **test_review_service.py** — Cubrir:
 - `poll_all_businesses` llama a GooglePlaces una vez por negocio activo
 - Reseña ya existente no genera alerta duplicada
-- Reseña nueva con rating ≤ 3 genera exactamente una llamada a `bot.send_message`
-- Reseña nueva con rating > 3 no genera alerta
+- Reseña nueva con rating ≤ 3 → `review_type = negative` → alerta inmediata (1 llamada a `bot.send_message`)
+- Reseña nueva con rating ≥ 4 → `review_type = positive` → NO alerta inmediata (0 llamadas)
+- `send_daily_digest` envía resumen solo si hay positivas sin enviar en el día
+- `send_daily_digest` no envía nada si todas las positivas ya tienen `digest_sent_at`
+- Usuario plan Free con reseña negativa → alerta sin borrador
 - Fallo de GooglePlaces no bloquea el polling de los otros negocios
 
 ### 4. Tests del middleware (tests/test_bot/)
