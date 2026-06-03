@@ -75,11 +75,14 @@ async def handle_subscribe_callback(update: Update, context: ContextTypes.DEFAUL
             cancel_url=f"{settings.WEBHOOK_URL}/payment/cancel",
             metadata={"telegram_user_id": str(telegram_user_id), "plan": plan},
         )
+        pay_keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("💳 Completar pago", url=session.url)]
+        ])
         await query.edit_message_text(
-            f"Plan *{plan.capitalize()}* seleccionado.\n\n"
-            f"Completa el pago aquí:\n{session.url}\n\n"
-            "_Tras el pago recibirás un email para activar tu cuenta._",
-            parse_mode="Markdown",
+            f"Plan {plan.capitalize()} seleccionado.\n\n"
+            "Pulsa el botón para completar el pago de forma segura con Stripe.\n\n"
+            "Tras el pago recibirás un email para activar tu cuenta.",
+            reply_markup=pay_keyboard,
         )
     except Exception:
         logger.exception("Error creating Stripe checkout session")
