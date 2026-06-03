@@ -3,6 +3,7 @@ import logging
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import parseaddr
 
 from app.config import settings
 
@@ -17,10 +18,14 @@ def _send_smtp(to: str, subject: str, body_text: str, body_html: str) -> None:
     msg.attach(MIMEText(body_text, "plain"))
     msg.attach(MIMEText(body_html, "html"))
 
+    # Extract plain email for SMTP envelope — display names with <"email"> break Gmail
+    _, sender_email = parseaddr(settings.SMTP_FROM)
+    sender_email = sender_email.strip('"')
+
     with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
         server.starttls()
         server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-        server.sendmail(settings.SMTP_FROM, to, msg.as_string())
+        server.sendmail(sender_email, to, msg.as_string())
 
 
 async def send_activation_email(to: str, token: str) -> None:
