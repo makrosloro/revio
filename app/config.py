@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     BOT_ADMIN_CHAT_ID: int
     BOT_USERNAME: str = ""
     DAILY_DIGEST_HOUR: int = 21
-    POLLING_INTERVAL_HOURS: int = 2
+    POLLING_INTERVAL_MINUTES: int = 30
 
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
