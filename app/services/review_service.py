@@ -87,6 +87,10 @@ async def poll_all_businesses() -> None:
 
         for business in businesses:
             user = business.user
+            # Skip businesses whose owner has been blocked by an admin
+            if not user.is_active:
+                logger.debug("Skipping business_id=%d — owner user_id=%d is blocked", business.id, user.id)
+                continue
             try:
                 raw_reviews = await _places_client.get_reviews(business.google_place_id)
             except Exception:
