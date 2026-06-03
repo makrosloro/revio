@@ -1,3 +1,13 @@
+negociosano.com {
+    root * /home/deploy/negociosano/landing
+    file_server
+    encode gzip
+    log {
+        output file /var/log/caddy/landing.log
+        format json
+    }
+}
+
 api.negociosano.com {
     reverse_proxy localhost:8000
     encode gzip
