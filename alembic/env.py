@@ -15,12 +15,9 @@ database_url = os.environ.get("DATABASE_URL")
 if database_url:
     config.set_main_option("sqlalchemy.url", database_url)
 
-# Se sustituirá por Base.metadata cuando exista app/
-try:
-    from app.database import Base
-    target_metadata = Base.metadata
-except ImportError:
-    target_metadata = MetaData()
+from app.database import Base
+import app.models  # noqa: F401 — registra todos los modelos en Base.metadata
+target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
