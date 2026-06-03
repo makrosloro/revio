@@ -1,466 +1,454 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NegocioSano — Reputación online para tu negocio</title>
-  <meta name="description" content="Alertas inmediatas de reseñas negativas y borradores de respuesta con IA. Para restaurantes, bares y tiendas. Desde 0€.">
+  <meta name="description" content="Recibe alertas inmediatas de reseñas negativas en Google y responde con borradores generados por IA. Para restaurantes, bares y tiendas en España. Desde 0€.">
   <meta property="og:title" content="NegocioSano — Nunca más te pierdas una reseña negativa">
   <meta property="og:description" content="Alerta en Telegram al instante. Borrador de respuesta con IA en segundos. Sin apps extra.">
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: { 50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',400:'#4ade80',500:'#16a34a',600:'#15803d',700:'#166534',800:'#14532d',900:'#052e16' }
+          },
+          keyframes: {
+            'pulse-dot': { '0%,100%':{boxShadow:'0 0 0 0 rgba(74,222,128,.5)'}, '50%':{boxShadow:'0 0 0 6px rgba(74,222,128,0)'} },
+            'float': { '0%,100%':{transform:'translateY(0)'}, '50%':{transform:'translateY(-8px)'} }
+          },
+          animation: { 'pulse-dot':'pulse-dot 2s infinite', 'float':'float 5s ease-in-out infinite' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .text-balance { text-wrap: balance; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .faq-icon { transform: rotate(45deg); }
+    .hero-grid {
+      background-image: linear-gradient(to right, rgba(22,163,74,.07) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(22,163,74,.07) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+    }
+  </style>
 </head>
-<body>
+<body class="bg-white text-gray-700 antialiased">
 
-<!-- ─── NAV ──────────────────────────────────────────────────── -->
-<nav class="nav" id="nav">
-  <div class="nav__inner container">
-    <a href="/" class="nav__logo">
-      <span class="logo-mark">NS</span>
-      <span class="logo-text">NegocioSano</span>
+<!-- ═══ NAV ═══ -->
+<header id="nav" class="sticky top-0 z-50 transition-all duration-200 bg-white/80 backdrop-blur-lg border-b border-transparent">
+  <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center gap-8">
+    <a href="/" class="flex items-center gap-2.5 shrink-0">
+      <span class="w-8 h-8 bg-brand-500 text-white rounded-lg grid place-items-center text-xs font-black tracking-tight">NS</span>
+      <span class="font-extrabold text-gray-900 tracking-tight">NegocioSano</span>
     </a>
-    <ul class="nav__links">
-      <li><a href="#como-funciona">Cómo funciona</a></li>
-      <li><a href="#planes">Precios</a></li>
-      <li><a href="#faq">FAQ</a></li>
-    </ul>
-    <div class="nav__cta">
-      <a href="https://t.me/NegocioSanoBot" class="btn btn--sm btn--outline" target="_blank" rel="noopener">Iniciar sesión</a>
-      <a href="#planes" class="btn btn--sm">Ver planes</a>
+    <div class="hidden md:flex items-center gap-7 ml-auto text-sm font-medium text-gray-500">
+      <a href="#como-funciona" class="hover:text-gray-900 transition">Cómo funciona</a>
+      <a href="#planes" class="hover:text-gray-900 transition">Precios</a>
+      <a href="#faq" class="hover:text-gray-900 transition">FAQ</a>
     </div>
-    <button class="nav__burger" id="burger" aria-label="Menú">
-      <span></span><span></span><span></span>
+    <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener"
+       class="hidden md:inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition shadow-sm hover:shadow-md hover:-translate-y-0.5">
+      Empezar gratis
+    </a>
+    <button id="burger" class="md:hidden ml-auto p-2" aria-label="Menú">
+      <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
+  </nav>
+  <div id="mobileMenu" class="hidden md:hidden border-t border-gray-100 bg-white px-6 py-4 flex-col gap-1">
+    <a href="#como-funciona" class="block py-2.5 text-gray-600 font-medium border-b border-gray-50">Cómo funciona</a>
+    <a href="#planes" class="block py-2.5 text-gray-600 font-medium border-b border-gray-50">Precios</a>
+    <a href="#faq" class="block py-2.5 text-gray-600 font-medium border-b border-gray-50">FAQ</a>
+    <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener" class="mt-3 block text-center bg-brand-500 text-white font-semibold py-2.5 rounded-lg">Empezar gratis</a>
   </div>
-  <div class="nav__mobile" id="mobileMenu">
-    <a href="#como-funciona">Cómo funciona</a>
-    <a href="#planes">Precios</a>
-    <a href="#faq">FAQ</a>
-    <a href="https://t.me/NegocioSanoBot" class="btn btn--full" target="_blank" rel="noopener">Empezar gratis</a>
-  </div>
-</nav>
+</header>
 
-<!-- ─── HERO ─────────────────────────────────────────────────── -->
-<section class="hero">
-  <div class="hero__bg-grid"></div>
-  <div class="container hero__inner">
-    <div class="hero__content">
-      <div class="hero__eyebrow">
-        <span class="dot"></span>
-        Nuevo · Disponible para negocios en España
+<!-- ═══ HERO ═══ -->
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 hero-grid"></div>
+  <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-brand-100/40 rounded-full blur-3xl -z-10"></div>
+  <div class="relative max-w-6xl mx-auto px-6 pt-20 pb-24 grid lg:grid-cols-2 gap-16 items-center">
+
+    <div>
+      <div class="inline-flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-600 mb-6">
+        <span class="w-2 h-2 bg-brand-400 rounded-full animate-pulse-dot"></span>
+        Disponible para negocios en España
       </div>
-      <h1 class="hero__title">
-        Controla tu reputación en
-        <span class="text-gradient">Google Maps</span>
-        desde Telegram
+      <h1 class="text-4xl sm:text-5xl lg:text-[3.4rem] leading-[1.05] font-extrabold text-gray-900 tracking-tight text-balance mb-6">
+        Controla tus reseñas de Google <span class="text-brand-500">desde Telegram</span>
       </h1>
-      <p class="hero__desc">
-        Recibe una alerta en segundos cuando alguien deja una reseña negativa.
-        La IA genera un borrador de respuesta personalizado para que respondas en menos de un minuto.
+      <p class="text-lg text-gray-500 leading-relaxed mb-8 max-w-lg">
+        Recibe una alerta en segundos cuando alguien deja una reseña negativa. La IA te prepara un borrador de respuesta para que respondas en menos de un minuto.
       </p>
-      <div class="hero__actions">
-        <a href="https://t.me/NegocioSanoBot" class="btn btn--lg btn--primary" target="_blank" rel="noopener">
+      <div class="flex flex-col sm:flex-row gap-3 mb-8">
+        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener"
+           class="inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold px-7 py-3.5 rounded-xl transition shadow-lg shadow-brand-500/25 hover:-translate-y-0.5">
           Empezar gratis →
         </a>
-        <a href="#como-funciona" class="btn btn--lg btn--ghost-dark">
+        <a href="#como-funciona"
+           class="inline-flex items-center justify-center gap-2 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 font-semibold px-7 py-3.5 rounded-xl transition hover:-translate-y-0.5">
           Ver cómo funciona
         </a>
       </div>
-      <div class="hero__trust">
-        <span>✓ Plan gratuito permanente</span>
-        <span>✓ Sin tarjeta de crédito</span>
-        <span>✓ Cancela cuando quieras</span>
+      <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400 font-medium">
+        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-brand-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg> Plan gratuito permanente</span>
+        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-brand-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg> Sin tarjeta</span>
+        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-brand-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg> Cancela cuando quieras</span>
       </div>
     </div>
 
-    <div class="hero__visual">
-      <div class="mockup">
-        <div class="mockup__header">
-          <div class="mockup__dot r"></div>
-          <div class="mockup__dot y"></div>
-          <div class="mockup__dot g"></div>
-          <span class="mockup__title">NegocioSano Bot</span>
+    <!-- Mockup -->
+    <div class="relative lg:pl-8">
+      <div class="absolute inset-0 bg-gradient-to-tr from-brand-200/30 to-transparent rounded-3xl blur-2xl"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl shadow-gray-900/10 border border-gray-100 overflow-hidden max-w-sm mx-auto animate-float">
+        <div class="bg-gray-900 px-4 py-3 flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+          <span class="ml-2 text-xs text-gray-400 font-medium">NegocioSano Bot</span>
         </div>
-        <div class="mockup__body">
-          <div class="msg msg--alert">
-            <div class="msg__badge">🔴 Nueva reseña negativa</div>
-            <div class="msg__biz">Bar El Rincón · Google Maps</div>
-            <div class="msg__rating">⭐⭐ 2/5 · Ana García · hace 3 min</div>
-            <div class="msg__text">"Llevamos 40 minutos esperando y la comida llegó fría. El camarero ni se disculpó."</div>
-            <div class="msg__draft">
-              <span class="msg__draft-label">💬 Borrador de respuesta:</span>
-              <p>Ana, gracias por tu feedback. Sentimos que tu experiencia no estuvo a la altura. Te invitamos a contactarnos directamente para compensarlo. Trabajamos cada día para mejorar nuestro servicio.</p>
+        <div class="p-4 space-y-3 bg-gray-50">
+          <div class="bg-white rounded-xl p-4 border-l-4 border-red-400 shadow-sm">
+            <p class="text-[11px] font-bold text-red-500 uppercase tracking-wide mb-1">🔴 Nueva reseña negativa</p>
+            <p class="text-[11px] text-gray-400 mb-1">Bar El Rincón · Google Maps</p>
+            <p class="text-xs font-semibold text-gray-700 mb-2">⭐⭐ 2/5 · Ana García · hace 3 min</p>
+            <p class="text-xs text-gray-500 italic mb-3">"Llevamos 40 minutos esperando y la comida llegó fría. El camarero ni se disculpó."</p>
+            <div class="bg-brand-50 rounded-lg p-3">
+              <p class="text-[11px] font-bold text-brand-600 mb-1">💬 Borrador de respuesta</p>
+              <p class="text-xs text-gray-600 leading-relaxed">Ana, gracias por tu feedback. Sentimos que tu experiencia no estuvo a la altura. Contáctanos directamente para compensarlo. Mejoramos cada día.</p>
             </div>
-            <div class="msg__time">14:32</div>
+            <p class="text-[10px] text-gray-400 text-right mt-2">14:32 ✓✓</p>
           </div>
-          <div class="msg msg--positive">
-            <div class="msg__badge msg__badge--pos">🌟 Resumen de hoy</div>
-            <div class="msg__text">Has recibido <strong>4 reseñas positivas</strong> hoy.</div>
-            <div class="msg__time">21:00</div>
+          <div class="bg-brand-50 rounded-xl p-4 border-l-4 border-brand-500 shadow-sm">
+            <p class="text-[11px] font-bold text-brand-600 uppercase tracking-wide mb-1">🌟 Resumen de hoy</p>
+            <p class="text-xs text-gray-600">Has recibido <strong>4 reseñas positivas</strong> hoy.</p>
+            <p class="text-[10px] text-gray-400 text-right mt-2">21:00 ✓✓</p>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
-<!-- ─── LOGOS / SOCIAL PROOF ─────────────────────────────────── -->
-<section class="proof">
-  <div class="container">
-    <p class="proof__label">Diseñado para</p>
-    <div class="proof__items">
-      <span>🍽️ Restaurantes</span>
-      <span>☕ Cafeterías</span>
-      <span>🍺 Bares y pubs</span>
-      <span>🏨 Hoteles</span>
-      <span>💇 Peluquerías</span>
-      <span>🛍️ Tiendas</span>
+<!-- ═══ PROOF ═══ -->
+<section class="border-y border-gray-100 bg-gray-50/60">
+  <div class="max-w-6xl mx-auto px-6 py-8 flex flex-wrap items-center justify-center gap-3">
+    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mr-2">Diseñado para</span>
+    <span class="bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-600">🍽️ Restaurantes</span>
+    <span class="bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-600">☕ Cafeterías</span>
+    <span class="bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-600">🍺 Bares</span>
+    <span class="bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-600">🏨 Hoteles</span>
+    <span class="bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-600">💇 Peluquerías</span>
+    <span class="bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-600">🛍️ Tiendas</span>
+  </div>
+</section>
+
+<!-- ═══ PROBLEMA / SOLUCIÓN ═══ -->
+<section class="py-24">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="inline-block bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">El problema</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight text-balance mb-4">Cada reseña sin responder te cuesta clientes</h2>
+      <p class="text-lg text-gray-500">El 97% de los consumidores lee reseñas antes de visitar un negocio. Si no respondes, parece que no te importa.</p>
     </div>
-  </div>
-</section>
-
-<!-- ─── PROBLEMA / SOLUCIÓN ───────────────────────────────────── -->
-<section class="split">
-  <div class="container">
-    <div class="section-tag">El problema</div>
-    <h2 class="section-title">Cada reseña negativa sin respuesta<br>te cuesta clientes</h2>
-    <p class="section-desc">El 97% de los consumidores lee reseñas online antes de visitar un negocio.<br>
-    Si no respondes, parece que no te importa.</p>
-
-    <div class="split__grid">
-      <div class="split__card split__card--bad">
-        <div class="split__icon">😰</div>
-        <h3>Sin NegocioSano</h3>
-        <ul>
-          <li>Te enteras días después de la reseña</li>
-          <li>No sabes qué responder sin quedar mal</li>
-          <li>Las reseñas sin respuesta dañan tu posición en Google</li>
-          <li>Pierdes clientes que leen los comentarios</li>
-          <li>Cada hora sin responder empeora la situación</li>
+    <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+      <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-red-50 grid place-items-center text-2xl mb-4">😰</div>
+        <h3 class="font-bold text-gray-900 text-lg mb-4">Sin NegocioSano</h3>
+        <ul class="space-y-3 text-sm text-gray-600">
+          <li class="flex gap-2.5"><span class="text-red-400 font-bold">✗</span> Te enteras días después de la reseña</li>
+          <li class="flex gap-2.5"><span class="text-red-400 font-bold">✗</span> No sabes qué responder sin quedar mal</li>
+          <li class="flex gap-2.5"><span class="text-red-400 font-bold">✗</span> Las reseñas sin respuesta dañan tu posición</li>
+          <li class="flex gap-2.5"><span class="text-red-400 font-bold">✗</span> Pierdes clientes que leen los comentarios</li>
         </ul>
       </div>
-      <div class="split__card split__card--good">
-        <div class="split__icon">😌</div>
-        <h3>Con NegocioSano</h3>
-        <ul>
-          <li>Alerta en Telegram en cuanto llega</li>
-          <li>Borrador de respuesta generado por IA al instante</li>
-          <li>Respondes en menos de un minuto</li>
-          <li>Google premia a los negocios que responden</li>
-          <li>Resumen diario de reseñas positivas también</li>
+      <div class="bg-white rounded-2xl border-2 border-brand-200 p-8 shadow-lg shadow-brand-500/5">
+        <div class="w-12 h-12 rounded-xl bg-brand-50 grid place-items-center text-2xl mb-4">😌</div>
+        <h3 class="font-bold text-gray-900 text-lg mb-4">Con NegocioSano</h3>
+        <ul class="space-y-3 text-sm text-gray-600">
+          <li class="flex gap-2.5"><span class="text-brand-500 font-bold">✓</span> Alerta en Telegram en cuanto llega</li>
+          <li class="flex gap-2.5"><span class="text-brand-500 font-bold">✓</span> Borrador de respuesta con IA al instante</li>
+          <li class="flex gap-2.5"><span class="text-brand-500 font-bold">✓</span> Respondes en menos de un minuto</li>
+          <li class="flex gap-2.5"><span class="text-brand-500 font-bold">✓</span> Google premia a quien responde activamente</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── CÓMO FUNCIONA ────────────────────────────────────────── -->
-<section class="steps" id="como-funciona">
-  <div class="container">
-    <div class="section-tag">Proceso</div>
-    <h2 class="section-title">Configuración en 5 minutos</h2>
-    <p class="section-desc">Sin instalar apps. Sin dashboards complicados. Todo en Telegram, la app que ya tienes.</p>
-
-    <div class="steps__grid">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <div class="step-icon">💳</div>
-        <h3>Elige tu plan</h3>
-        <p>Free, Pro o Multi. El gratuito no necesita tarjeta. Los de pago se activan al instante tras el pago.</p>
+<!-- ═══ CÓMO FUNCIONA ═══ -->
+<section id="como-funciona" class="py-24 bg-gray-50 border-y border-gray-100">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="inline-block bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">Proceso</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">Configúralo en 5 minutos</h2>
+      <p class="text-lg text-gray-500">Sin instalar apps ni aprender dashboards. Todo en Telegram, la app que ya usas.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm relative">
+        <span class="text-xs font-black text-brand-500 tracking-widest">01</span>
+        <div class="text-4xl my-4">💳</div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Elige tu plan</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Free, Pro o Multi. El gratuito no necesita tarjeta. Los de pago se activan al instante.</p>
       </div>
-      <div class="step-line"></div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <div class="step-icon">🔍</div>
-        <h3>Añade tu negocio</h3>
-        <p>Busca tu negocio por nombre en el bot. Lo encontramos en Google Maps en segundos. Sin códigos ni tecnicismos.</p>
+      <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm relative">
+        <span class="text-xs font-black text-brand-500 tracking-widest">02</span>
+        <div class="text-4xl my-4">🔍</div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Añade tu negocio</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Búscalo por nombre en el bot. Lo encontramos en Google Maps en segundos. Sin códigos.</p>
       </div>
-      <div class="step-line"></div>
-      <div class="step-card">
-        <div class="step-num">03</div>
-        <div class="step-icon">📲</div>
-        <h3>Recibe alertas y responde</h3>
-        <p>Cada reseña negativa llega a Telegram con un borrador listo. Copias, pegas en Google y listo.</p>
+      <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm relative">
+        <span class="text-xs font-black text-brand-500 tracking-widest">03</span>
+        <div class="text-4xl my-4">📲</div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Recibe y responde</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Cada reseña negativa llega con un borrador listo. Copias, pegas en Google y listo.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── CARACTERÍSTICAS ──────────────────────────────────────── -->
-<section class="features">
-  <div class="container">
-    <div class="features__grid">
-      <div class="features__intro">
-        <div class="section-tag">Funcionalidades</div>
-        <h2 class="section-title" style="text-align:left">Todo lo que necesitas para tu reputación online</h2>
-        <p class="section-desc" style="text-align:left">Diseñado específicamente para el pequeño hostelero español. Sin complicaciones.</p>
+<!-- ═══ FEATURES ═══ -->
+<section class="py-24">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="inline-block bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">Funcionalidades</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">Todo para tu reputación online</h2>
+      <p class="text-lg text-gray-500">Pensado específicamente para el pequeño hostelero español.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:border-brand-300 hover:shadow-lg transition">
+        <div class="w-12 h-12 rounded-xl bg-red-50 grid place-items-center text-2xl mb-4">⚡</div>
+        <h3 class="font-bold text-gray-900 mb-2">Alertas en tiempo real</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Revisamos Google Maps cada 2 horas. Si hay una reseña negativa, te llega al instante.</p>
       </div>
-
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#fef2f2">⚡</div>
-        <h3>Alertas en tiempo real</h3>
-        <p>Revisamos Google Maps cada 2 horas. Si hay una reseña negativa, te llega al móvil al momento.</p>
+      <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:border-brand-300 hover:shadow-lg transition">
+        <div class="w-12 h-12 rounded-xl bg-brand-50 grid place-items-center text-2xl mb-4">🤖</div>
+        <h3 class="font-bold text-gray-900 mb-2">Borradores con IA</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Claude AI redacta una respuesta en el tono de tu negocio: cercano, profesional o formal.</p>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#f0fdf4">🤖</div>
-        <h3>Borradores con IA</h3>
-        <p>Claude AI (Anthropic) redacta una respuesta en el tono de tu negocio: cercano, profesional o formal.</p>
+      <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:border-brand-300 hover:shadow-lg transition">
+        <div class="w-12 h-12 rounded-xl bg-yellow-50 grid place-items-center text-2xl mb-4">🌟</div>
+        <h3 class="font-bold text-gray-900 mb-2">Resumen de positivas</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">A las 21:00 recibes las reseñas buenas del día, también con borradores de respuesta.</p>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#fefce8">🌟</div>
-        <h3>Resumen de positivas</h3>
-        <p>A las 21:00 recibes un resumen de las reseñas buenas del día, también con borradores de respuesta.</p>
+      <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:border-brand-300 hover:shadow-lg transition">
+        <div class="w-12 h-12 rounded-xl bg-blue-50 grid place-items-center text-2xl mb-4">🎭</div>
+        <h3 class="font-bold text-gray-900 mb-2">Tono personalizable</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Configura si quieres respuestas cercanas, profesionales o formales. La IA se adapta.</p>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#eff6ff">🎭</div>
-        <h3>Tono personalizable</h3>
-        <p>Configura si quieres respuestas cercanas, profesionales o formales. La IA se adapta a tu estilo.</p>
+      <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:border-brand-300 hover:shadow-lg transition">
+        <div class="w-12 h-12 rounded-xl bg-purple-50 grid place-items-center text-2xl mb-4">🏪</div>
+        <h3 class="font-bold text-gray-900 mb-2">Múltiples locales</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">El plan Multi gestiona hasta 3 locales desde una sola cuenta. Ideal para pequeñas cadenas.</p>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#faf5ff">🏪</div>
-        <h3>Múltiples locales</h3>
-        <p>El plan Multi gestiona hasta 3 locales desde una sola cuenta. Perfecto para pequeñas cadenas.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#f0fdf4">📊</div>
-        <h3>Sin apps adicionales</h3>
-        <p>Todo funciona en Telegram, la app que ya usas cada día. Sin dashboards ni nuevas contraseñas.</p>
+      <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:border-brand-300 hover:shadow-lg transition">
+        <div class="w-12 h-12 rounded-xl bg-brand-50 grid place-items-center text-2xl mb-4">📱</div>
+        <h3 class="font-bold text-gray-900 mb-2">Sin apps adicionales</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Todo funciona en Telegram. Sin dashboards nuevos ni contraseñas que recordar.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── PLANES ───────────────────────────────────────────────── -->
-<section class="plans" id="planes">
-  <div class="container">
-    <div class="section-tag">Precios</div>
-    <h2 class="section-title">Elige tu plan</h2>
-    <p class="section-desc">Sin permanencia. Sin sorpresas. Cancela cuando quieras.</p>
+<!-- ═══ PLANES ═══ -->
+<section id="planes" class="py-24 bg-gray-50 border-y border-gray-100">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="inline-block bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">Precios</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">Elige tu plan</h2>
+      <p class="text-lg text-gray-500">Sin permanencia. Sin sorpresas. Cancela cuando quieras.</p>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
 
-    <div class="plans__grid">
-
-      <div class="plan">
-        <div class="plan__header">
-          <p class="plan__name">Free</p>
-          <div class="plan__price">
-            <span class="plan__amount">0€</span>
-            <span class="plan__period">/mes</span>
-          </div>
-          <p class="plan__tagline">Para empezar sin compromiso</p>
-        </div>
-        <ul class="plan__features">
-          <li class="ok">Google Maps</li>
-          <li class="ok">Alertas de reseñas negativas</li>
-          <li class="ok">1 negocio</li>
-          <li class="no">Borradores con IA</li>
-          <li class="no">Resumen diario de positivas</li>
-          <li class="no">Múltiples plataformas</li>
+      <!-- Free -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-8">
+        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest mb-3">Free</p>
+        <div class="flex items-baseline gap-1 mb-1"><span class="text-5xl font-black text-gray-900 tracking-tight">0€</span><span class="text-gray-400">/mes</span></div>
+        <p class="text-sm text-gray-400 mb-6">Para empezar sin compromiso</p>
+        <ul class="space-y-3 text-sm mb-8">
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Google Maps</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Alertas de reseñas negativas</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> 1 negocio</li>
+          <li class="flex gap-2.5 text-gray-300"><span class="font-bold">–</span> Borradores con IA</li>
+          <li class="flex gap-2.5 text-gray-300"><span class="font-bold">–</span> Resumen diario de positivas</li>
         </ul>
-        <a href="https://t.me/NegocioSanoBot" class="btn btn--outline btn--full" target="_blank" rel="noopener">
-          Empezar gratis
-        </a>
+        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener" class="block text-center bg-white border border-gray-200 hover:border-brand-400 hover:text-brand-600 text-gray-700 font-semibold py-3 rounded-xl transition">Empezar gratis</a>
       </div>
 
-      <div class="plan plan--featured">
-        <div class="plan__popular">Más popular</div>
-        <div class="plan__header">
-          <p class="plan__name">Pro</p>
-          <div class="plan__price">
-            <span class="plan__amount">29€</span>
-            <span class="plan__period">/mes</span>
-          </div>
-          <p class="plan__tagline">Para el hostelero activo</p>
-        </div>
-        <ul class="plan__features">
-          <li class="ok">Google Maps</li>
-          <li class="ok">Alertas inmediatas <strong>con borrador IA</strong></li>
-          <li class="ok">Resumen diario de positivas + borradores</li>
-          <li class="ok">1 negocio</li>
-          <li class="ok">Tono de respuesta personalizable</li>
-          <li class="soon">Informe PDF semanal <em>Próximamente</em></li>
+      <!-- Pro -->
+      <div class="bg-white rounded-2xl border-2 border-brand-500 p-8 shadow-xl shadow-brand-500/10 relative lg:-mt-4 lg:mb-4">
+        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-500 text-white text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">Más popular</span>
+        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest mb-3">Pro</p>
+        <div class="flex items-baseline gap-1 mb-1"><span class="text-5xl font-black text-gray-900 tracking-tight">29€</span><span class="text-gray-400">/mes</span></div>
+        <p class="text-sm text-gray-400 mb-6">Para el hostelero activo</p>
+        <ul class="space-y-3 text-sm mb-8">
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Google Maps</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Alertas inmediatas <strong>con borrador IA</strong></li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Resumen diario + borradores</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Tono personalizable</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> 1 negocio</li>
         </ul>
-        <a href="https://t.me/NegocioSanoBot" class="btn btn--primary btn--full" target="_blank" rel="noopener">
-          Contratar Pro →
-        </a>
+        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener" class="block text-center bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-brand-500/25">Contratar Pro →</a>
       </div>
 
-      <div class="plan">
-        <div class="plan__header">
-          <p class="plan__name">Multi</p>
-          <div class="plan__price">
-            <span class="plan__amount">59€</span>
-            <span class="plan__period">/mes</span>
-          </div>
-          <p class="plan__tagline">Para varios locales</p>
-        </div>
-        <ul class="plan__features">
-          <li class="ok">Todo lo del plan Pro</li>
-          <li class="ok">Hasta 3 negocios</li>
-          <li class="ok">Informes consolidados</li>
-          <li class="soon">Publicar en Google directamente <em>Fase 3</em></li>
-          <li class="ok">Soporte prioritario</li>
-          <li class="ok">Aprobación de respuestas desde Telegram</li>
+      <!-- Multi -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-8">
+        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest mb-3">Multi</p>
+        <div class="flex items-baseline gap-1 mb-1"><span class="text-5xl font-black text-gray-900 tracking-tight">59€</span><span class="text-gray-400">/mes</span></div>
+        <p class="text-sm text-gray-400 mb-6">Para varios locales</p>
+        <ul class="space-y-3 text-sm mb-8">
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Todo lo del plan Pro</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Hasta 3 negocios</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Informes consolidados</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Soporte prioritario</li>
+          <li class="flex gap-2.5 text-gray-600"><span class="text-brand-500 font-bold">✓</span> Aprobación desde Telegram</li>
         </ul>
-        <a href="https://t.me/NegocioSanoBot" class="btn btn--outline btn--full" target="_blank" rel="noopener">
-          Contratar Multi →
-        </a>
+        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener" class="block text-center bg-white border border-gray-200 hover:border-brand-400 hover:text-brand-600 text-gray-700 font-semibold py-3 rounded-xl transition">Contratar Multi →</a>
       </div>
 
     </div>
-
-    <p class="plans__note">¿Tienes más de 3 locales? <a href="mailto:hola@negociosano.com">Contáctanos</a> para un plan personalizado.</p>
+    <p class="text-center text-sm text-gray-400 mt-10">¿Más de 3 locales? <a href="mailto:hola@negociosano.com" class="text-brand-600 font-semibold hover:underline">Contáctanos</a> para un plan a medida.</p>
   </div>
 </section>
 
-<!-- ─── COMPARATIVA ──────────────────────────────────────────── -->
-<section class="compare">
-  <div class="container">
-    <div class="section-tag">Comparativa</div>
-    <h2 class="section-title">¿Por qué NegocioSano?</h2>
-    <p class="section-desc">Las herramientas genéricas cuestan 200€/mes y están pensadas para agencias, no para el pequeño hostelero.</p>
-    <div class="compare__wrap">
-      <table class="compare__table">
+<!-- ═══ COMPARATIVA ═══ -->
+<section class="py-24">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="inline-block bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">Comparativa</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">¿Por qué NegocioSano?</h2>
+      <p class="text-lg text-gray-500">Las herramientas genéricas cuestan 200€/mes y están pensadas para agencias, no para ti.</p>
+    </div>
+    <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
+      <table class="w-full text-sm bg-white">
         <thead>
-          <tr>
-            <th></th>
-            <th class="hl">NegocioSano</th>
-            <th>ReviewTrackers, Podium</th>
-            <th>Gestionarlo a mano</th>
+          <tr class="bg-gray-50 border-b border-gray-200">
+            <th class="text-left px-6 py-4 font-semibold text-gray-500"></th>
+            <th class="px-6 py-4 font-bold text-brand-700 bg-brand-50">NegocioSano</th>
+            <th class="px-6 py-4 font-semibold text-gray-600">Podium, ReviewTrackers</th>
+            <th class="px-6 py-4 font-semibold text-gray-600">A mano</th>
           </tr>
         </thead>
-        <tbody>
-          <tr><td>Precio</td><td class="hl"><strong>29€/mes</strong></td><td>200–400€/mes</td><td>0€ pero horas perdidas</td></tr>
-          <tr><td>Alertas inmediatas</td><td class="hl">✅ Telegram</td><td>✅ Email</td><td>❌ Manual</td></tr>
-          <tr><td>Borradores con IA</td><td class="hl">✅ Claude AI</td><td>⚠ Básico</td><td>❌</td></tr>
-          <tr><td>Configuración</td><td class="hl">✅ 5 minutos</td><td>⚠ 1-2 horas</td><td>✅ Inmediata</td></tr>
-          <tr><td>Sin app extra</td><td class="hl">✅ Solo Telegram</td><td>❌ Dashboard propio</td><td>✅</td></tr>
-          <tr><td>En español</td><td class="hl">✅ Nativo</td><td>⚠ Traducido</td><td>✅</td></tr>
+        <tbody class="divide-y divide-gray-100">
+          <tr><td class="px-6 py-4 text-gray-700 font-medium">Precio</td><td class="px-6 py-4 text-center font-bold text-gray-900 bg-brand-50/50">29€/mes</td><td class="px-6 py-4 text-center text-gray-500">200–400€/mes</td><td class="px-6 py-4 text-center text-gray-500">Horas perdidas</td></tr>
+          <tr><td class="px-6 py-4 text-gray-700 font-medium">Alertas inmediatas</td><td class="px-6 py-4 text-center bg-brand-50/50">✅ Telegram</td><td class="px-6 py-4 text-center text-gray-500">✅ Email</td><td class="px-6 py-4 text-center text-gray-400">❌</td></tr>
+          <tr><td class="px-6 py-4 text-gray-700 font-medium">Borradores con IA</td><td class="px-6 py-4 text-center bg-brand-50/50">✅ Claude AI</td><td class="px-6 py-4 text-center text-gray-500">⚠️ Básico</td><td class="px-6 py-4 text-center text-gray-400">❌</td></tr>
+          <tr><td class="px-6 py-4 text-gray-700 font-medium">Configuración</td><td class="px-6 py-4 text-center bg-brand-50/50">✅ 5 minutos</td><td class="px-6 py-4 text-center text-gray-500">⚠️ 1-2 horas</td><td class="px-6 py-4 text-center text-gray-500">Inmediata</td></tr>
+          <tr><td class="px-6 py-4 text-gray-700 font-medium">Sin app extra</td><td class="px-6 py-4 text-center bg-brand-50/50">✅ Telegram</td><td class="px-6 py-4 text-center text-gray-400">❌</td><td class="px-6 py-4 text-center text-gray-500">✅</td></tr>
+          <tr><td class="px-6 py-4 text-gray-700 font-medium">En español</td><td class="px-6 py-4 text-center bg-brand-50/50">✅ Nativo</td><td class="px-6 py-4 text-center text-gray-500">⚠️ Traducido</td><td class="px-6 py-4 text-center text-gray-500">✅</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- ─── FAQ ──────────────────────────────────────────────────── -->
-<section class="faq" id="faq">
-  <div class="container">
-    <div class="section-tag">FAQ</div>
-    <h2 class="section-title">Preguntas frecuentes</h2>
-
-    <div class="faq__grid">
-      <details class="faq__item">
-        <summary>¿Necesito conocimientos técnicos?</summary>
-        <p>No. Si usas Telegram, puedes usar NegocioSano. El bot te guía paso a paso con botones, sin tecnicismos. Añades tu negocio buscándolo por nombre, como si buscaras en Google Maps.</p>
+<!-- ═══ FAQ ═══ -->
+<section id="faq" class="py-24 bg-gray-50 border-y border-gray-100">
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <span class="inline-block bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">FAQ</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">Preguntas frecuentes</h2>
+    </div>
+    <div class="space-y-3">
+      <details class="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition">
+        <summary class="flex items-center justify-between cursor-pointer px-5 py-4 font-semibold text-gray-900"><span>¿Necesito conocimientos técnicos?</span><span class="faq-icon text-brand-500 text-xl transition-transform">+</span></summary>
+        <p class="px-5 pb-5 text-sm text-gray-500 leading-relaxed">No. Si usas Telegram, puedes usar NegocioSano. El bot te guía paso a paso con botones. Añades tu negocio buscándolo por nombre, sin tecnicismos.</p>
       </details>
-      <details class="faq__item">
-        <summary>¿Con qué plataformas funciona?</summary>
-        <p>Ahora mismo con <strong>Google Maps</strong>. TripAdvisor y Booking están en desarrollo activo y llegarán en las próximas semanas para los planes Pro y Multi.</p>
+      <details class="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition">
+        <summary class="flex items-center justify-between cursor-pointer px-5 py-4 font-semibold text-gray-900"><span>¿Con qué plataformas funciona?</span><span class="faq-icon text-brand-500 text-xl transition-transform">+</span></summary>
+        <p class="px-5 pb-5 text-sm text-gray-500 leading-relaxed">Ahora mismo con <strong>Google Maps</strong>. TripAdvisor y Booking están en desarrollo y llegarán pronto para los planes Pro y Multi.</p>
       </details>
-      <details class="faq__item">
-        <summary>¿Cómo funcionan los borradores de IA?</summary>
-        <p>Cuando llega una reseña negativa, enviamos el texto al modelo Claude de Anthropic junto con el nombre y tono de tu negocio. La IA genera una respuesta empática y profesional en menos de 3 segundos. Tú decides si copiarla tal cual o ajustarla antes de publicarla en Google.</p>
+      <details class="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition">
+        <summary class="flex items-center justify-between cursor-pointer px-5 py-4 font-semibold text-gray-900"><span>¿Cómo funcionan los borradores de IA?</span><span class="faq-icon text-brand-500 text-xl transition-transform">+</span></summary>
+        <p class="px-5 pb-5 text-sm text-gray-500 leading-relaxed">Cuando llega una reseña negativa, enviamos el texto al modelo Claude de Anthropic con el nombre y tono de tu negocio. La IA genera una respuesta en menos de 3 segundos. Tú decides si copiarla tal cual o ajustarla.</p>
       </details>
-      <details class="faq__item">
-        <summary>¿Puedo cancelar cuando quiera?</summary>
-        <p>Sí, sin penalizaciones ni permanencia. Cancelas desde el bot con <code>/estado</code> y tu suscripción permanece activa hasta el final del período pagado.</p>
+      <details class="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition">
+        <summary class="flex items-center justify-between cursor-pointer px-5 py-4 font-semibold text-gray-900"><span>¿Puedo cancelar cuando quiera?</span><span class="faq-icon text-brand-500 text-xl transition-transform">+</span></summary>
+        <p class="px-5 pb-5 text-sm text-gray-500 leading-relaxed">Sí, sin penalizaciones ni permanencia. Cancelas desde el bot y tu suscripción sigue activa hasta el final del período pagado.</p>
       </details>
-      <details class="faq__item">
-        <summary>¿El plan gratuito es temporal?</summary>
-        <p>No, es permanente. El plan Free te da alertas de reseñas negativas de Google Maps sin borrador de respuesta. Sin límite de tiempo. Puedes mejorarlo a Pro cuando quieras.</p>
+      <details class="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition">
+        <summary class="flex items-center justify-between cursor-pointer px-5 py-4 font-semibold text-gray-900"><span>¿El plan gratuito es temporal?</span><span class="faq-icon text-brand-500 text-xl transition-transform">+</span></summary>
+        <p class="px-5 pb-5 text-sm text-gray-500 leading-relaxed">No, es permanente. El plan Free da alertas de reseñas negativas de Google Maps sin borrador de respuesta. Sin límite de tiempo. Mejóralo a Pro cuando quieras.</p>
       </details>
-      <details class="faq__item">
-        <summary>¿Cómo de rápidas son las alertas?</summary>
-        <p>Revisamos Google Maps cada 2 horas. Cuando detectamos una reseña nueva, la alerta llega a tu Telegram en segundos. Es el ciclo más rápido posible dentro de los límites de la API de Google.</p>
-      </details>
-      <details class="faq__item">
-        <summary>¿Mis datos están seguros?</summary>
-        <p>Los datos se almacenan en servidores europeos (Hetzner, Alemania). Solo procesamos los textos de reseñas públicas de Google. No accedemos a tu cuenta de Google ni a ningún dato privado.</p>
-      </details>
-      <details class="faq__item">
-        <summary>¿Funciona para cadenas con varios locales?</summary>
-        <p>Sí. El plan Multi gestiona hasta 3 locales desde la misma cuenta de Telegram. Cada local tiene sus propias alertas y borradores, y puedes ver un resumen consolidado de todos.</p>
+      <details class="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition">
+        <summary class="flex items-center justify-between cursor-pointer px-5 py-4 font-semibold text-gray-900"><span>¿Mis datos están seguros?</span><span class="faq-icon text-brand-500 text-xl transition-transform">+</span></summary>
+        <p class="px-5 pb-5 text-sm text-gray-500 leading-relaxed">Los datos se almacenan en servidores europeos (Alemania). Solo procesamos textos de reseñas públicas de Google. No accedemos a tu cuenta de Google ni a datos privados.</p>
       </details>
     </div>
   </div>
 </section>
 
-<!-- ─── CTA FINAL ────────────────────────────────────────────── -->
-<section class="cta-final">
-  <div class="container">
-    <div class="cta-final__inner">
-      <h2>Empieza a responder más rápido que la competencia</h2>
-      <p>Configúralo en 5 minutos. Sin tarjeta de crédito. Sin compromiso.</p>
-      <a href="https://t.me/NegocioSanoBot" class="btn btn--lg btn--white" target="_blank" rel="noopener">
-        Abrir NegocioSano en Telegram →
-      </a>
+<!-- ═══ CTA FINAL ═══ -->
+<section class="py-24">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 via-brand-900 to-gray-900 px-8 py-16 sm:px-16 text-center">
+      <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 30% 20%, rgba(74,222,128,.4), transparent 50%)"></div>
+      <div class="relative">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight text-balance mb-4">Responde más rápido que tu competencia</h2>
+        <p class="text-lg text-gray-300 mb-8">Configúralo en 5 minutos. Sin tarjeta. Sin compromiso.</p>
+        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-white hover:bg-brand-50 text-gray-900 font-bold px-8 py-4 rounded-xl transition shadow-xl hover:-translate-y-0.5">
+          Abrir NegocioSano en Telegram →
+        </a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ─── FOOTER ───────────────────────────────────────────────── -->
-<footer class="footer">
-  <div class="container footer__inner">
-    <div class="footer__brand">
-      <div class="footer__logo">
-        <span class="logo-mark logo-mark--sm">NS</span>
-        <strong>NegocioSano</strong>
+<!-- ═══ FOOTER ═══ -->
+<footer class="bg-gray-900 text-gray-400">
+  <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-[1.5fr_2fr] gap-12">
+    <div>
+      <div class="flex items-center gap-2.5 mb-3">
+        <span class="w-7 h-7 bg-brand-500 text-white rounded-lg grid place-items-center text-[10px] font-black">NS</span>
+        <strong class="text-white">NegocioSano</strong>
       </div>
-      <p>Gestión de reputación online para negocios españoles.</p>
-      <a href="mailto:hola@negociosano.com">hola@negociosano.com</a>
+      <p class="text-sm leading-relaxed max-w-xs mb-3">Gestión de reputación online para negocios españoles.</p>
+      <a href="mailto:hola@negociosano.com" class="text-sm text-brand-400 hover:text-brand-300">hola@negociosano.com</a>
     </div>
-    <div class="footer__cols">
-      <div>
-        <strong>Producto</strong>
-        <a href="#como-funciona">Cómo funciona</a>
-        <a href="#planes">Precios</a>
-        <a href="#faq">FAQ</a>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-8">
+      <div class="flex flex-col gap-2.5">
+        <strong class="text-white text-xs uppercase tracking-widest mb-1">Producto</strong>
+        <a href="#como-funciona" class="text-sm hover:text-white transition">Cómo funciona</a>
+        <a href="#planes" class="text-sm hover:text-white transition">Precios</a>
+        <a href="#faq" class="text-sm hover:text-white transition">FAQ</a>
       </div>
-      <div>
-        <strong>Acceso</strong>
-        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener">Abrir bot Telegram</a>
-        <a href="https://api.negociosano.com/payment/success">Activar cuenta</a>
+      <div class="flex flex-col gap-2.5">
+        <strong class="text-white text-xs uppercase tracking-widest mb-1">Acceso</strong>
+        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener" class="text-sm hover:text-white transition">Abrir bot</a>
       </div>
-      <div>
-        <strong>Legal</strong>
-        <a href="/legal/privacidad.html">Privacidad</a>
-        <a href="/legal/terminos.html">Términos</a>
-        <a href="/legal/cookies.html">Cookies</a>
+      <div class="flex flex-col gap-2.5">
+        <strong class="text-white text-xs uppercase tracking-widest mb-1">Legal</strong>
+        <a href="/legal/privacidad.html" class="text-sm hover:text-white transition">Privacidad</a>
+        <a href="/legal/terminos.html" class="text-sm hover:text-white transition">Términos</a>
       </div>
     </div>
   </div>
-  <div class="footer__bottom">
-    <div class="container">
-      <p>© 2026 NegocioSano · Hecho con ☕ en España · Servidores en 🇩🇪 Alemania</p>
-    </div>
+  <div class="border-t border-white/10 py-6">
+    <p class="text-center text-xs text-gray-500">© 2026 NegocioSano · Hecho con ☕ en España · Servidores en 🇩🇪 Alemania</p>
   </div>
 </footer>
 
 <script>
-// Mobile menu
-const burger = document.getElementById('burger');
-const menu = document.getElementById('mobileMenu');
-burger.addEventListener('click', () => {
-  menu.classList.toggle('open');
-  burger.classList.toggle('active');
-});
-menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-  menu.classList.remove('open'); burger.classList.remove('active');
-}));
-
-// Sticky nav
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), {passive: true});
-
-// Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const el = document.querySelector(a.getAttribute('href'));
-    if (el) { e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
-  });
-});
+  const burger = document.getElementById('burger');
+  const menu = document.getElementById('mobileMenu');
+  burger.addEventListener('click', () => menu.classList.toggle('hidden'));
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.add('hidden')));
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('border-gray-200', window.scrollY > 20);
+    nav.classList.toggle('shadow-sm', window.scrollY > 20);
+  }, { passive: true });
 </script>
 </body>
 </html>
