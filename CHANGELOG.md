@@ -16,6 +16,14 @@ Versionado según [Semantic Versioning](https://semver.org/lang/es/).
 - `pyproject.toml` con configuración de ruff, mypy y pytest-asyncio
 - CI/CD con GitHub Actions: `ci.yml` (tests en push) y `deploy.yml` (deploy SSH al VPS en push a main)
 - GitFlow inicializado con ramas `main` y `develop` publicadas en origin
+- Estructura completa de carpetas `app/` con todos los módulos y `__init__.py`
+- `app/config.py` — Settings con pydantic-settings leyendo desde `.env`
+- `app/database.py` — AsyncEngine, AsyncSessionLocal y Base declarativa
+- Modelos SQLAlchemy: `User`, `Business`, `Review`, `AlertLog` con FKs CASCADE e índices
+- Migración Alembic `0001_initial_schema` con las 4 tablas
+- `app/main.py` — FastAPI con lifespan, endpoint `/health` y router de webhooks
+- `app/webhooks/stripe.py` — stub con validación de firma Stripe
+- `.env.example` con todas las variables requeridas
 
 ### Changed
 - `.gitignore` ampliado con `backups/`, `*.sql.gz` y `.mypy_cache/`
