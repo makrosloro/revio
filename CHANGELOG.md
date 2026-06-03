@@ -25,6 +25,9 @@ Versionado según [Semantic Versioning](https://semver.org/lang/es/).
 - `app/webhooks/stripe.py` — stub con validación de firma Stripe
 - `.env.example` con todas las variables requeridas
 
+- Agente 07: DevOps — `.dockerignore`, `scripts/backup.sh` con retención 7 días, `DEPLOYMENT_SERVER.md` alineado con flujo SSH real
+- CI/CD: `STRIPE_PRO_PRICE_ID` y `STRIPE_MULTI_PRICE_ID` añadidos a env vars de tests en `ci.yml` y `deploy.yml`
+
 - Agente 03: sistema de polling de Google Maps, clasificación de reseñas y alertas/resumen diario
 - `app/models/review.py` — campos `review_type` (negative/positive) y `digest_sent_at` + índice compuesto
 - Migración Alembic `0003_add_review_type_and_digest_sent_at`
