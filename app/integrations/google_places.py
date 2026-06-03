@@ -8,6 +8,7 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 _PLACES_BASE = "https://places.googleapis.com/v1/places"
+_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 _MAX_RETRIES = 3
 
 
@@ -61,6 +62,35 @@ class GooglePlacesClient:
                 return []
 
         return []
+
+    async def search_by_text(self, query: str) -> list[dict]:
+        """Search places by free-text query. Returns up to 5 results with id, name, address."""
+        headers = {
+            "X-Goog-Api-Key": self._api_key,
+            "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress",
+        }
+        body = {"textQuery": query, "languageCode": "es", "maxResultCount": 5}
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                response = await client.post(_SEARCH_URL, headers=headers, json=body)
+
+            if response.status_code == 200:
+                places = response.json().get("places", [])
+                return [
+                    {
+                        "id": p.get("id", ""),
+                        "name": p.get("displayName", {}).get("text", ""),
+                        "address": p.get("formattedAddress", ""),
+                    }
+                    for p in places
+                    if p.get("id")
+                ]
+
+            logger.error("Places text search failed: HTTP %d", response.status_code)
+            return []
+        except httpx.RequestError:
+            logger.exception("Places text search request error for query: %s", query)
+            return []
 
     async def _alert_admin(self, message: str) -> None:
         from app.bot import get_application

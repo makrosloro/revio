@@ -9,6 +9,12 @@ Versionado según [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- `/agregar` reescrito: búsqueda por texto en Places API, lista de resultados con botones inline, confirmación de propiedad con declaración ToS
+- `GooglePlacesClient.search_by_text()` — búsqueda por texto usando Places API v1 textSearch
+- Migración `0005` — campo `self_declared_owner` en tabla `businesses`
+- Página `/payment/success` — HTML con pasos de activación post-pago
+- Página `/payment/cancel` — HTML con mensaje tranquilizador y contacto
+
 ### Changed
 ### Fixed
 ### Removed
