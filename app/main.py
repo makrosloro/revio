@@ -51,3 +51,8 @@ async def health() -> dict:
     async with AsyncSessionLocal() as session:
         await session.execute(text("SELECT 1"))
     return {"status": "ok", "db": "connected"}
+
+
+@app.get("/payment/success")
+async def payment_success() -> dict:
+    return {"status": "ok", "message": "Pago completado. Revisa tu email para activar tu cuenta en Telegram."}
