@@ -24,7 +24,9 @@ class Review(Base):
     rating: Mapped[int] = mapped_column(Integer)
     text: Mapped[str | None] = mapped_column(Text, nullable=True)
     sentiment: Mapped[str] = mapped_column(String(20))
+    review_type: Mapped[str] = mapped_column(String(20), server_default="negative")
     published_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
+    digest_sent_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()
     )
@@ -32,6 +34,7 @@ class Review(Base):
     __table_args__ = (
         UniqueConstraint("platform", "review_id", name="uq_platform_review_id"),
         Index("ix_reviews_platform_review_id", "platform", "review_id"),
+        Index("ix_reviews_business_type_digest", "business_id", "review_type", "digest_sent_at"),
     )
 
     business: Mapped["Business"] = relationship(back_populates="reviews")
