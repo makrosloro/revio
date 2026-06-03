@@ -88,6 +88,19 @@ async def get_by_stripe_customer(session: AsyncSession, stripe_customer_id: str)
     return result.scalar_one_or_none()
 
 
+async def refresh_activation_token(session: AsyncSession, user_id: int) -> str:
+    """Generate a fresh activation token (re-subscriptions or token expiry)."""
+    token = uuid.uuid4().hex
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=48)
+    await session.execute(
+        update(User)
+        .where(User.id == user_id)
+        .values(activation_token=token, token_expires_at=expires_at)
+    )
+    await session.commit()
+    return token
+
+
 async def get_all_active_subscribers(session: AsyncSession) -> list[User]:
     """Return all active users with a paid plan."""
     result = await session.execute(
