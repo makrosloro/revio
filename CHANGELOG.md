@@ -9,50 +9,35 @@ Versionado según [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
-- `docker-compose.yml` para desarrollo local (solo PostgreSQL, healthcheck)
-- `docker-compose.prod.yml` para producción en VPS (app + bd, red interna, solo localhost:8000)
-- `Dockerfile` multistage con stage `deps` cacheado y stage `runtime` con usuario no-root `appuser`
-- `Caddyfile` para `api.negociosano.com` con reverse proxy, gzip y logging JSON
-- `pyproject.toml` con configuración de ruff, mypy y pytest-asyncio
-- CI/CD con GitHub Actions: `ci.yml` (tests en push) y `deploy.yml` (deploy SSH al VPS en push a main)
-- GitFlow inicializado con ramas `main` y `develop` publicadas en origin
-- Estructura completa de carpetas `app/` con todos los módulos y `__init__.py`
-- `app/config.py` — Settings con pydantic-settings leyendo desde `.env`
-- `app/database.py` — AsyncEngine, AsyncSessionLocal y Base declarativa
-- Modelos SQLAlchemy: `User`, `Business`, `Review`, `AlertLog` con FKs CASCADE e índices
-- Migración Alembic `0001_initial_schema` con las 4 tablas
-- `app/main.py` — FastAPI con lifespan, endpoint `/health` y router de webhooks
-- `app/webhooks/stripe.py` — stub con validación de firma Stripe
-- `.env.example` con todas las variables requeridas
+### Changed
+### Fixed
+### Removed
 
+---
+
+## [0.2.0] — 2026-06-03
+
+### Added
 - Agente 05: borradores IA con Claude Haiku — alertas negativas con borrador (Pro/Multi), resumen diario con borradores (máx 5), /responder con regeneración, tono configurable por negocio vía /config
 - `app/integrations/anthropic_client.py` — AnthropicClient con generate_negative_draft, generate_positive_draft, generate_draft_on_demand y tracking de tokens
 - `app/bot/handlers/responder.py` — /responder con selección de reseña, generación y botones Regenerar/Listo
 - Migración `0004` — tone DEFAULT 'cercano' en businesses, draft_type y ai_draft_tokens en alert_logs
-- `fix(email)` — SMTPSenderRefused al enviar email de activación (SMTP_FROM con comillas)
-
-- Agente 07: DevOps — `.dockerignore`, `scripts/backup.sh` con retención 7 días, `DEPLOYMENT_SERVER.md` alineado con flujo SSH real
+- Agente 07: `.dockerignore`, `scripts/backup.sh` con retención 7 días, `DEPLOYMENT_SERVER.md` alineado con flujo SSH real
 - CI/CD: `STRIPE_PRO_PRICE_ID` y `STRIPE_MULTI_PRICE_ID` añadidos a env vars de tests en `ci.yml` y `deploy.yml`
-
-- Agente 03: sistema de polling de Google Maps, clasificación de reseñas y alertas/resumen diario
-- `app/models/review.py` — campos `review_type` (negative/positive) y `digest_sent_at` + índice compuesto
-- Migración Alembic `0003_add_review_type_and_digest_sent_at`
-- `app/repositories/review_repo.py` — exists, create, get_undigested_positives, mark_digest_sent, get_recent_negatives
-- `app/repositories/business_repo.py` — get_all_active con eager load del User, set_active
-- `app/repositories/alert_log_repo.py` — create para registrar alertas enviadas
-- `app/repositories/user_repo.py` — get_all_active_subscribers para usuarios Pro/Multi activos
-- `app/integrations/google_places.py` — GooglePlacesClient con backoff exponencial en rate limit
-- `app/services/review_service.py` — poll_all_businesses (ciclo de polling) y send_daily_digest
-- `app/services/places_service.py` — extract_place_id_from_url (cubre URLs directas, paths y goo.gl)
-- `app/scheduler/tasks.py` — dos jobs APScheduler: poll_reviews (cada 2h) y daily_digest (21:00 Madrid)
-- `app/bot/handlers/resenas.py` — comando /resenas con botones inline para negativas/positivas
-- Scheduler integrado en el lifespan de FastAPI
-
-### Changed
-- `.gitignore` ampliado con `backups/`, `*.sql.gz` y `.mypy_cache/`
+- Agente 03: sistema completo de polling de Google Maps, clasificación, alertas inmediatas y resumen diario
+- Migración `0003_add_review_type_and_digest_sent_at`
+- `app/scheduler/tasks.py` — poll_reviews (cada 2h) y daily_digest (21:00 Madrid)
+- Suite de 60 tests con SQLite in-memory (repositorios, servicios, integraciones)
+- Endpoint `/payment/success` para redirecció post-Stripe
+- `docker-compose.yml`, `docker-compose.prod.yml`, `Dockerfile` multistage, `Caddyfile`
+- CI/CD con GitHub Actions: `ci.yml` y `deploy.yml` (SSH al VPS en push a main)
+- Modelos SQLAlchemy: `User`, `Business`, `Review`, `AlertLog` con FKs CASCADE e índices
+- Migraciones Alembic 0001–0004
+- Bot de Telegram: /start, /activar, /suscribir, /agregar, /config, /pausa, /estado, /resenas, /responder
+- Autenticación multi-tenant vía Stripe + token de activación por email
 
 ### Fixed
-### Removed
+- `fix(email)` — SMTPSenderRefused al enviar email de activación (SMTP_FROM con comillas en la dirección)
 
 ---
 
