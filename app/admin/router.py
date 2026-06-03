@@ -230,7 +230,8 @@ async def _poll_single(business_id: int) -> None:
                 continue
             rating = raw.get("rating", 0)
             review_type = _classify_review(rating)
-            text = raw.get("text", {}).get("text") if isinstance(raw.get("text"), dict) else raw.get("text")
+            text_src = raw.get("originalText") or raw.get("text")
+            text = text_src.get("text") if isinstance(text_src, dict) else text_src
             author = raw.get("authorAttribution", {}).get("displayName", "Anónimo")
 
             from datetime import datetime
