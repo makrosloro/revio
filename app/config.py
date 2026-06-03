@@ -30,5 +30,8 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     SMTP_FROM: str = ""
 
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_PASSWORD: str = ""
+
 
 settings = Settings()
