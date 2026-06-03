@@ -23,6 +23,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             f"Plan activo: *{plan_label}*\n\n"
             f"Comandos disponibles:\n"
             f"/agregar — añadir un negocio\n"
+            f"/negocios — ver tus negocios añadidos\n"
             f"/resenas — ver reseñas recientes\n"
             f"/responder — generar borrador de respuesta\n"
             f"/config — configurar tono de respuesta\n"
