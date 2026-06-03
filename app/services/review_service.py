@@ -101,6 +101,11 @@ async def poll_all_businesses() -> None:
                 review_id = raw.get("name", "")
                 platform = "google"
 
+                # Skip reviews without a unique ID — avoids poisoning dedup with ""
+                if not review_id:
+                    logger.warning("Review without name/id for business_id=%d, skipping", business.id)
+                    continue
+
                 if await review_repo.exists(session, platform, review_id):
                     continue
 
