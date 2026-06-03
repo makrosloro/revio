@@ -5,8 +5,8 @@
 .PHONY: help dev test migrate status logs restart-app backup-db \
         feature release hotfix gitflow-init
 
-COMPOSE_LOCAL = docker-compose
-COMPOSE_PROD  = docker-compose -f docker-compose.prod.yml
+COMPOSE_LOCAL = docker compose
+COMPOSE_PROD  = docker compose -f docker-compose.prod.yml
 VPS           = deploy@$(shell grep VPS_HOST .vps_host 2>/dev/null || echo "IP_DEL_VPS")
 
 # ── Ayuda ────────────────────────────────────────────────
@@ -41,7 +41,7 @@ help:
 # ── Desarrollo local ─────────────────────────────────────
 dev:
 	@echo "Arrancando entorno de desarrollo..."
-	docker-compose up -d db
+	docker compose up -d db
 	@sleep 3
 	alembic upgrade head
 	uvicorn app.main:app --reload --host 0.0.0.0 --port 8000

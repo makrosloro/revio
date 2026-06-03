@@ -109,14 +109,14 @@ jobs:
             git pull origin main
 
             # Rebuild y restart solo del contenedor app (la BD no se toca)
-            docker-compose -f docker-compose.prod.yml build app
-            docker-compose -f docker-compose.prod.yml up -d app
+            docker compose -f docker-compose.prod.yml build app
+            docker compose -f docker-compose.prod.yml up -d app
 
             # Esperar a que la app arranque
             sleep 15
 
             # Ejecutar migraciones pendientes
-            docker-compose -f docker-compose.prod.yml exec -T app alembic upgrade head
+            docker compose -f docker-compose.prod.yml exec -T app alembic upgrade head
 
             # Health check
             curl -f http://localhost:8000/health || (echo "❌ Health check fallido" && exit 1)
