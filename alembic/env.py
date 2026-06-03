@@ -1,16 +1,26 @@
 import asyncio
+import os
 from logging.config import fileConfig
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import pool, MetaData
 from alembic import context
-from app.database import Base
-from app.models import user, business, review  # importar todos los modelos
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Base.metadata
+# En producción (Docker), DATABASE_URL viene del .env y sobreescribe alembic.ini.
+# Necesario porque ConfigParser no lee variables de entorno.
+database_url = os.environ.get("DATABASE_URL")
+if database_url:
+    config.set_main_option("sqlalchemy.url", database_url)
+
+# Se sustituirá por Base.metadata cuando exista app/
+try:
+    from app.database import Base
+    target_metadata = Base.metadata
+except ImportError:
+    target_metadata = MetaData()
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
