@@ -21,9 +21,10 @@ class GooglePlacesClient:
         url = f"{_PLACES_BASE}/{place_id}"
         headers = {
             "X-Goog-Api-Key": self._api_key,
-            # originalText preserves the language the review was written in.
-            # text.text may be auto-translated by Google.
-            "X-Goog-FieldMask": "reviews.rating,reviews.authorAttribution,reviews.publishTime,reviews.text,reviews.originalText",
+            # reviews.name is the unique review ID — REQUIRED for dedup.
+            # originalText preserves the language the review was written in
+            # (text.text may be auto-translated by Google).
+            "X-Goog-FieldMask": "reviews.name,reviews.rating,reviews.authorAttribution,reviews.publishTime,reviews.text,reviews.originalText",
         }
         for attempt in range(1, _MAX_RETRIES + 1):
             try:

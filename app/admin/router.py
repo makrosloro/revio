@@ -272,6 +272,8 @@ async def _poll_single(business_id: int) -> None:
 
         for raw in raw_reviews:
             review_id = raw.get("name", "")
+            if not review_id:
+                continue
             if await review_repo.exists(session, "google", review_id):
                 continue
 
