@@ -1,0 +1,66 @@
+name: CI — Tests
+
+on:
+  push:
+    branches: [develop, "feature/**", "hotfix/**", "release/**"]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  test:
+    name: Tests y calidad de código
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: negociosano_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Verificar migraciones
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:test_password@localhost/negociosano_test
+        run: alembic upgrade head
+
+      - name: Ejecutar tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:test_password@localhost/negociosano_test
+          TELEGRAM_BOT_TOKEN: fake_token_for_tests
+          GOOGLE_PLACES_API_KEY: fake_key_for_tests
+          STRIPE_SECRET_KEY: sk_test_fake
+          STRIPE_WEBHOOK_SECRET: whsec_fake
+          STRIPE_PRO_PRICE_ID: price_pro_fake
+          STRIPE_MULTI_PRICE_ID: price_multi_fake
+          ANTHROPIC_API_KEY: fake_key_for_tests
+          WEBHOOK_URL: https://fake.domain.com
+          BOT_ADMIN_CHAT_ID: "123456789"
+        run: pytest tests/ -v --tb=short --cov=app --cov-report=term-missing
+
+      - name: Notificación de fallo
+        if: failure()
+        run: |
+          echo "❌ Los tests fallaron en la rama ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Autor: ${{ github.actor }}"

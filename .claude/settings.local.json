@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git rm *)",
+      "Read(//home/makros/.ssh/**)",
+      "Bash(ssh *)",
+      "Bash(git *)"
+    ]
+  }
+}
