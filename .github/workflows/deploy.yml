@@ -121,6 +121,13 @@ jobs:
             # Health check
             curl -f http://localhost:8000/health || (echo "❌ Health check fallido" && exit 1)
 
+            # Recargar Caddy si el Caddyfile ha cambiado
+            if git diff HEAD~1 --name-only | grep -q "Caddyfile"; then
+              sudo cp Caddyfile /etc/caddy/Caddyfile
+              sudo systemctl reload caddy
+              echo "♻️  Caddy recargado"
+            fi
+
             echo "✅ Deploy ${{ steps.version.outputs.VERSION }} completado"
 
       - name: Notificar éxito por Telegram
