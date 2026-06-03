@@ -15,10 +15,10 @@ ASKING_SEARCH = 0
 SELECTING_PLACE = 1
 CONFIRMING_OWNERSHIP = 2
 
-PLAN_LIMITS = {"free": 0, "pro": 1, "multi": 3}
+PLAN_LIMITS = {"free": 1, "pro": 1, "multi": 3}
 
 
-@require_subscription(min_plan="pro")
+@require_subscription(min_plan="free")
 async def agregar(update: Update, context: ContextTypes.DEFAULT_TYPE, user: User = None) -> int:
     async with AsyncSessionLocal() as session:
         count = await business_repo.count_by_user(session, user.id)

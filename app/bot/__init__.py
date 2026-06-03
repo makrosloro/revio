@@ -23,7 +23,7 @@ from app.bot.handlers.estado import estado
 from app.bot.handlers.pausa import handle_pause_callback, pausa, reanudar
 from app.bot.handlers.resenas import handle_resenas_callback, resenas
 from app.bot.handlers.responder import handle_responder_callback, responder
-from app.bot.handlers.start import start
+from app.bot.handlers.start import handle_start_callback, start
 from app.bot.handlers.suscribir import handle_subscribe_callback, suscribir
 
 _application: Application | None = None
@@ -64,5 +64,6 @@ def create_application(token: str) -> Application:
     _application.add_handler(CallbackQueryHandler(handle_resenas_callback, pattern="^resenas_"))
     _application.add_handler(CallbackQueryHandler(handle_responder_callback, pattern="^resp_"))
     _application.add_handler(CallbackQueryHandler(handle_config_callback, pattern="^cfg_"))
+    _application.add_handler(CallbackQueryHandler(handle_start_callback, pattern="^signup_"))
 
     return _application
