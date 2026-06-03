@@ -20,8 +20,15 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str
 
     BOT_ADMIN_CHAT_ID: int
+    BOT_USERNAME: str = ""
     DAILY_DIGEST_HOUR: int = 21
     POLLING_INTERVAL_HOURS: int = 2
+
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = ""
 
 
 settings = Settings()
