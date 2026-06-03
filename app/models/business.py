@@ -22,7 +22,7 @@ class Business(Base):
     google_place_id: Mapped[str] = mapped_column(String(255), index=True)
     platform: Mapped[str] = mapped_column(String(50), server_default="google")
     is_paused: Mapped[bool] = mapped_column(Boolean, server_default="false")
-    tone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    tone: Mapped[str] = mapped_column(String(50), server_default="cercano")
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()
     )
