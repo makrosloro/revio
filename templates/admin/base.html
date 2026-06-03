@@ -57,7 +57,7 @@
     <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
       <div>
         <h1 class="text-lg font-semibold text-gray-900">{% block heading %}{% endblock %}</h1>
-        {% block subheading %}<p class="text-sm text-gray-400 mt-0.5">{% endblock %}{% block subheading_text %}{% endblock %}</p>{% endblock %}
+        <p class="text-sm text-gray-400 mt-0.5">{% block subheading_text %}{% endblock %}</p>
       </div>
       <div class="flex items-center gap-3">
         {% block actions %}{% endblock %}
