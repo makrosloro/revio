@@ -11,7 +11,7 @@ async def get_all_active(session: AsyncSession) -> list[Business]:
     """Return all non-paused businesses with their user eagerly loaded."""
     result = await session.execute(
         select(Business)
-        .where(Business.is_paused.is_(False))
+        .where(Business.is_paused == False)  # noqa: E712 — is_(False) breaks SQLite
         .options(selectinload(Business.user))
         .order_by(Business.id)
     )
