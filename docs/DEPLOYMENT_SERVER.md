@@ -3,38 +3,36 @@
 > VPS Hetzner CX22 (2 vCPU, 4 GB RAM, 40 GB SSD, ~4,35€/mes).
 > Dominio negociosano.com gestionado en Cloudflare.
 
-## Arquitectura objetivo
+## Arquitectura
 
 ```
 GitHub (código)
     │
-    ├── push a develop → CI (tests) → ❌ o ✅ sin deploy
+    ├── push a develop / feature/* → CI (tests + migraciones)
+    │                                → ❌ o ✅  sin deploy
     │
-    └── push a main (vía GitFlow) → CI + CD
+    └── push a main (vía GitFlow release) → CI + CD
                     │
                     ▼
-         GitHub Container Registry (GHCR)
-         ghcr.io/TU_USUARIO/negociosano:vX.Y.Z
-                    │
-             SSH deploy al servidor
+         GitHub Actions (ubuntu-latest)
+         └── SSH al VPS
                     │
                     ▼
-         Servidor dedicado Ubuntu 24.04
-         ├── Caddy (reverse proxy + TLS automático)
-         ├── Docker: negociosano_app
-         ├── Docker: negociosano_db (PostgreSQL)
-         └── Docker: redis (Celery — fase 2)
+         VPS Hetzner Ubuntu 24.04
+         ├── Caddy  — reverse proxy + TLS automático
+         └── Docker Compose (docker-compose.prod.yml)
+             ├── negociosano-db-1   (PostgreSQL 16)
+             └── negociosano-app-1  (FastAPI + bot)
 ```
 
 ---
 
-## Preparación del servidor (una sola vez)
-
-### 1. Provisioning inicial
+## 1. Provisioning inicial del VPS (una sola vez)
 
 ```bash
-ssh root@IP_SERVIDOR
+ssh root@IP_DEL_VPS
 
+# Actualizar sistema
 apt update && apt upgrade -y
 apt install -y docker.io docker-compose-plugin git curl ufw fail2ban
 
@@ -46,40 +44,53 @@ ufw allow 80/tcp
 ufw allow 443/tcp
 ufw enable
 
-# Usuario de deploy sin root
+# Usuario de deploy (sin permisos root)
 useradd -m -s /bin/bash deploy
 usermod -aG docker deploy
+
+# Crear carpetas de trabajo
+mkdir -p /home/deploy/negociosano/logs /home/deploy/negociosano/backups
+chown -R deploy:deploy /home/deploy/negociosano
 ```
 
-### 2. SSH key para GitHub Actions
+---
+
+## 2. SSH key para GitHub Actions
 
 ```bash
-# En tu máquina local
+# En tu máquina local — genera clave dedicada para CI
 ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/negociosano_deploy
 
-# Clave PÚBLICA → pegar en authorized_keys del servidor
-cat ~/.ssh/negociosano_deploy.pub
-# En servidor: echo "CLAVE_PUBLICA" >> /home/deploy/.ssh/authorized_keys
+# Copia la clave PÚBLICA al VPS
+ssh-copy-id -i ~/.ssh/negociosano_deploy.pub deploy@IP_DEL_VPS
+# o manualmente:
+# cat ~/.ssh/negociosano_deploy.pub >> /home/deploy/.ssh/authorized_keys
 
-# Clave PRIVADA → GitHub → Settings → Secrets → Actions → New secret
-# Name: SERVER_SSH_KEY / Value: contenido de la clave privada
+# La clave PRIVADA va como GitHub Secret (ver sección 3)
 cat ~/.ssh/negociosano_deploy
 ```
 
-### 3. Secrets de GitHub requeridos
+---
 
-```
-SERVER_HOST          → IP o dominio del servidor
-SERVER_USER          → deploy
-SERVER_SSH_KEY       → clave privada Ed25519
-SERVER_PROJECT_PATH  → /home/deploy/negociosano
-GHCR_TOKEN           → GitHub PAT con permisos packages:write
-```
+## 3. GitHub Secrets requeridos
 
-### 4. Caddy como reverse proxy
+Ir a: GitHub repo → Settings → Secrets and variables → Actions
+
+| Secret | Valor |
+|--------|-------|
+| `VPS_HOST` | IP o dominio del VPS |
+| `VPS_USER` | `deploy` |
+| `VPS_SSH_KEY` | Contenido completo de `~/.ssh/negociosano_deploy` (clave privada) |
+| `VPS_PROJECT_PATH` | `/home/deploy/negociosano` |
+| `TELEGRAM_BOT_TOKEN` | Token del bot de Telegram |
+| `BOT_ADMIN_CHAT_ID` | Tu Telegram user ID numérico |
+
+---
+
+## 4. Caddy como reverse proxy con TLS automático
 
 ```bash
-# Instalar Caddy en el servidor
+# Instalar Caddy en el VPS
 apt install -y debian-keyring apt-transport-https
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' \
   | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
@@ -87,119 +98,138 @@ curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' \
   | tee /etc/apt/sources.list.d/caddy-stable.list
 apt update && apt install caddy
 
-# /etc/caddy/Caddyfile
-# TU_DOMINIO.com {
-#     reverse_proxy localhost:8000
-#     encode gzip
-# }
-
-systemctl enable caddy && systemctl start caddy
+# Copiar Caddyfile del repo
+cp /home/deploy/negociosano/Caddyfile /etc/caddy/Caddyfile
+systemctl enable caddy && systemctl restart caddy
 ```
 
-### 5. Docker Compose para servidor (docker-compose.server.yml)
+El `Caddyfile` del repo (raíz del proyecto) configura TLS automático vía Let's Encrypt para `api.negociosano.com`.
 
-```yaml
-services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: negociosano
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      retries: 5
-    networks: [internal]
+---
 
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    networks: [internal]
+## 5. Primer deploy manual (una sola vez)
 
-  app:
-    image: ghcr.io/TU_USUARIO/negociosano:${APP_VERSION:-latest}
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    env_file: .env
-    ports:
-      - "127.0.0.1:8000:8000"
-    volumes:
-      - ./logs:/app/logs
-    networks: [internal]
+```bash
+ssh deploy@IP_DEL_VPS
+cd /home/deploy/negociosano
 
-  worker:
-    image: ghcr.io/TU_USUARIO/negociosano:${APP_VERSION:-latest}
-    restart: unless-stopped
-    command: celery -A app.worker worker --loglevel=info
-    depends_on: [db, redis]
-    env_file: .env
-    networks: [internal]
+# Clonar el repo
+git clone git@github.com:TU_USUARIO/negociosano.git .
 
-volumes:
-  postgres_data:
-networks:
-  internal:
+# Crear .env de producción a partir del ejemplo
+cp .env.example .env
+nano .env  # completar todos los valores reales
+
+# Arrancar la BD primero
+docker compose -f docker-compose.prod.yml up -d db
+sleep 15
+
+# Ejecutar migraciones
+docker compose -f docker-compose.prod.yml run --rm app alembic upgrade head
+
+# Arrancar la app
+docker compose -f docker-compose.prod.yml up -d
+
+# Verificar
+curl http://localhost:8000/health
+# → {"status": "ok", "db": "connected"}
+
+# Recargar Caddy con el nuevo Caddyfile
+sudo cp Caddyfile /etc/caddy/Caddyfile
+sudo systemctl reload caddy
+
+# Verificar TLS (puede tardar 1-2 min para que Let's Encrypt emita el certificado)
+curl https://api.negociosano.com/health
+# → {"status": "ok", "db": "connected"}
 ```
 
 ---
 
-## Flujo de deploy automático
+## 6. Flujo automático de CI/CD
 
 ```
 git flow release finish X.Y.Z
-git push origin main && git push origin --tags
+git push origin main && git push origin develop && git push origin --tags
     │
-    ▼ GitHub Actions: ci.yml (tests)
-    │   └─ FALLA → STOP, email de notificación
+    ▼ GitHub Actions: deploy.yml (job test)
+    │   ├── Instala dependencias Python
+    │   ├── alembic upgrade head (PostgreSQL de CI)
+    │   ├── pytest tests/ -v
+    │   └── FALLA → STOP + notificación Telegram al admin
     │
-    └─ OK ▼ GitHub Actions: deploy.yml
-        → docker build + push a GHCR con tag vX.Y.Z
-        → SSH al servidor
-        → docker-compose pull app worker
-        → docker-compose up -d app worker
-        → alembic upgrade head
-        → curl health check
-        → Telegram al admin: "✅ vX.Y.Z desplegado en servidor"
+    └── OK ▼ GitHub Actions: deploy.yml (job deploy)
+        ├── SSH al VPS
+        ├── git pull origin main
+        ├── docker compose build app
+        ├── docker compose up -d app
+        ├── sleep 15
+        ├── alembic upgrade head (BD de producción)
+        ├── curl health check
+        └── Notificación Telegram: "✅ vX.Y.Z desplegado"
 ```
 
 ---
 
-## Backup automático
+## 7. Backup automático de la BD
+
+Configurar cron job en el VPS como usuario `deploy`:
 
 ```bash
-#!/bin/bash
-# /home/deploy/scripts/backup.sh — cron diario 3:00 AM
-DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/home/deploy/negociosano/backups"
-
-docker exec negociosano-db-1 pg_dump -U postgres negociosano \
-  | gzip > "$BACKUP_DIR/negociosano_$DATE.sql.gz"
-
-# Opcional: sincronizar a almacenamiento externo
-# rclone copy "$BACKUP_DIR/negociosano_$DATE.sql.gz" b2:negociosano-backups/
-
-find $BACKUP_DIR -name "*.sql.gz" -mtime +7 -delete
+crontab -e
+# Añadir:
+0 3 * * * /home/deploy/negociosano/scripts/backup.sh >> /home/deploy/negociosano/logs/backup.log 2>&1
 ```
+
+El script `scripts/backup.sh` hace pg_dump comprimido y elimina backups con más de 7 días. Los backups se guardan en `backups/negociosano_YYYYMMDD_HHMMSS.sql.gz`.
 
 ---
 
-## Rollback rápido
+## 8. Rollback rápido
 
 ```bash
-ssh deploy@IP_SERVIDOR
+ssh deploy@IP_DEL_VPS
 cd /home/deploy/negociosano
 
-# Rollback a versión anterior
-export APP_VERSION=v1.1.0
-docker-compose -f docker-compose.server.yml pull app worker
-docker-compose -f docker-compose.server.yml up -d app worker
+# Volver a un commit/tag anterior
+git checkout v1.1.0
+docker compose -f docker-compose.prod.yml build app
+docker compose -f docker-compose.prod.yml up -d app
 
-# Si hay que revertir migración de BD
-docker-compose -f docker-compose.server.yml exec app alembic downgrade -1
+# Si hay que revertir una migración de BD
+docker compose -f docker-compose.prod.yml exec app alembic downgrade -1
 ```
+
+---
+
+## 9. Comandos de operación diaria
+
+```bash
+# Ver estado de contenedores
+make status
+
+# Ver logs de la app en tiempo real
+make logs
+
+# Reiniciar solo la app (sin tocar la BD)
+make restart-app
+
+# Backup manual
+make backup-db
+
+# Deploy manual de emergencia (si CI/CD falla)
+make deploy
+```
+
+---
+
+## 10. Variables de entorno en producción
+
+El `.env` en el VPS debe tener todos los valores reales del `.env.example`.
+**Nunca** subir el `.env` al repositorio — está en `.gitignore`.
+
+Variables críticas para producción:
+- `WEBHOOK_URL` → `https://api.negociosano.com`
+- `DATABASE_URL` → `postgresql+asyncpg://postgres:${DB_PASSWORD}@db:5432/negociosano`
+- `DB_PASSWORD` → contraseña fuerte (≥20 chars), igual que en `docker-compose.prod.yml`
+- `TELEGRAM_BOT_TOKEN` → token real del bot
+- `STRIPE_SECRET_KEY` → clave `sk_live_...` (¡no sk_test!)
