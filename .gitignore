@@ -47,6 +47,13 @@ htmlcov/
 *.log
 logs/
 
+# Backups
+backups/
+*.sql.gz
+
+# Type checking
+.mypy_cache/
+
 # Docker
 *.override.yml
 
