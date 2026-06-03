@@ -25,6 +25,20 @@ Versionado según [Semantic Versioning](https://semver.org/lang/es/).
 - `app/webhooks/stripe.py` — stub con validación de firma Stripe
 - `.env.example` con todas las variables requeridas
 
+- Agente 03: sistema de polling de Google Maps, clasificación de reseñas y alertas/resumen diario
+- `app/models/review.py` — campos `review_type` (negative/positive) y `digest_sent_at` + índice compuesto
+- Migración Alembic `0003_add_review_type_and_digest_sent_at`
+- `app/repositories/review_repo.py` — exists, create, get_undigested_positives, mark_digest_sent, get_recent_negatives
+- `app/repositories/business_repo.py` — get_all_active con eager load del User, set_active
+- `app/repositories/alert_log_repo.py` — create para registrar alertas enviadas
+- `app/repositories/user_repo.py` — get_all_active_subscribers para usuarios Pro/Multi activos
+- `app/integrations/google_places.py` — GooglePlacesClient con backoff exponencial en rate limit
+- `app/services/review_service.py` — poll_all_businesses (ciclo de polling) y send_daily_digest
+- `app/services/places_service.py` — extract_place_id_from_url (cubre URLs directas, paths y goo.gl)
+- `app/scheduler/tasks.py` — dos jobs APScheduler: poll_reviews (cada 2h) y daily_digest (21:00 Madrid)
+- `app/bot/handlers/resenas.py` — comando /resenas con botones inline para negativas/positivas
+- Scheduler integrado en el lifespan de FastAPI
+
 ### Changed
 - `.gitignore` ampliado con `backups/`, `*.sql.gz` y `.mypy_cache/`
 

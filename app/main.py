@@ -8,6 +8,7 @@ from telegram import Update
 from app.bot import create_application
 from app.config import settings
 from app.database import AsyncSessionLocal, engine
+from app.scheduler.tasks import create_scheduler, setup_jobs
 from app.webhooks.stripe import router as stripe_router
 from app.webhooks.telegram import router as telegram_router
 
@@ -25,9 +26,15 @@ async def lifespan(app: FastAPI):
     await bot_app.start()
     logger.info("Bot webhook configurado en %s", webhook_url)
 
+    scheduler = create_scheduler()
+    setup_jobs(scheduler)
+    scheduler.start()
+    logger.info("Scheduler iniciado")
+
     yield
 
     logger.info("Apagando NegocioSano...")
+    scheduler.shutdown(wait=False)
     await bot_app.stop()
     await bot_app.shutdown()
     await engine.dispose()

@@ -19,6 +19,7 @@ from app.bot.handlers.agregar import (
 from app.bot.handlers.config import config_handler
 from app.bot.handlers.estado import estado
 from app.bot.handlers.pausa import handle_pause_callback, pausa, reanudar
+from app.bot.handlers.resenas import handle_resenas_callback, resenas
 from app.bot.handlers.start import start
 from app.bot.handlers.suscribir import handle_subscribe_callback, suscribir
 
@@ -51,8 +52,10 @@ def create_application(token: str) -> Application:
     _application.add_handler(CommandHandler("pausa", pausa))
     _application.add_handler(CommandHandler("reanudar", reanudar))
     _application.add_handler(CommandHandler("estado", estado))
+    _application.add_handler(CommandHandler("resenas", resenas))
     _application.add_handler(agregar_conv)
     _application.add_handler(CallbackQueryHandler(handle_subscribe_callback, pattern="^subscribe_"))
     _application.add_handler(CallbackQueryHandler(handle_pause_callback, pattern="^(pause|resume)_"))
+    _application.add_handler(CallbackQueryHandler(handle_resenas_callback, pattern="^resenas_"))
 
     return _application

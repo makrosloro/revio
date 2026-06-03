@@ -86,3 +86,15 @@ async def get_by_stripe_customer(session: AsyncSession, stripe_customer_id: str)
         select(User).where(User.stripe_customer_id == stripe_customer_id)
     )
     return result.scalar_one_or_none()
+
+
+async def get_all_active_subscribers(session: AsyncSession) -> list[User]:
+    """Return all active users with a paid plan."""
+    result = await session.execute(
+        select(User).where(
+            User.is_active.is_(True),
+            User.plan.in_(("pro", "multi")),
+            User.sub_status == "active",
+        )
+    )
+    return list(result.scalars().all())
