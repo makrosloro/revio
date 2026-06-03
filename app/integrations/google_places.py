@@ -17,11 +17,13 @@ class GooglePlacesClient:
         self._api_key = settings.GOOGLE_PLACES_API_KEY
 
     async def get_reviews(self, place_id: str) -> list[dict]:
-        """Fetch reviews for a place. Returns empty list on unrecoverable error."""
+        """Fetch reviews in their original language. Returns empty list on unrecoverable error."""
         url = f"{_PLACES_BASE}/{place_id}"
         headers = {
             "X-Goog-Api-Key": self._api_key,
-            "X-Goog-FieldMask": "reviews",
+            # originalText preserves the language the review was written in.
+            # text.text may be auto-translated by Google.
+            "X-Goog-FieldMask": "reviews.rating,reviews.authorAttribution,reviews.publishTime,reviews.text,reviews.originalText",
         }
         for attempt in range(1, _MAX_RETRIES + 1):
             try:

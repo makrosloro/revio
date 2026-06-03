@@ -102,7 +102,9 @@ async def poll_all_businesses() -> None:
 
                 rating = raw.get("rating", 0)
                 review_type = _classify_review(rating)
-                text = raw.get("text", {}).get("text") if isinstance(raw.get("text"), dict) else raw.get("text")
+                # Prefer originalText (language as written) over text (may be auto-translated)
+                text_src = raw.get("originalText") or raw.get("text")
+                text = text_src.get("text") if isinstance(text_src, dict) else text_src
                 author = raw.get("authorAttribution", {}).get("displayName", "Anónimo")
                 published_raw = raw.get("publishTime")
                 published_at: datetime | None = None

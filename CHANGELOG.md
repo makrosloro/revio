@@ -9,7 +9,13 @@ Versionado según [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- Panel de administración v2: acciones CRUD — eliminar y bloquear/desbloquear usuarios, eliminar/pausar/reactivar negocios, eliminar reseñas
+- Diseño profesional del panel con KPIs, distribución por plan y estado del sistema
+- Rediseño completo de la landing page: hero oscuro con grid, mockup de teléfono, comparativa, secciones refinadas
+
 ### Changed
+- Reseñas guardadas en su idioma original (`originalText`) en lugar de la traducción automática de Google
+
 ### Fixed
 ### Removed
 
