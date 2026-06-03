@@ -9,7 +9,17 @@ Versionado según [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- `docker-compose.yml` para desarrollo local (solo PostgreSQL, healthcheck)
+- `docker-compose.prod.yml` para producción en VPS (app + bd, red interna, solo localhost:8000)
+- `Dockerfile` multistage con stage `deps` cacheado y stage `runtime` con usuario no-root `appuser`
+- `Caddyfile` para `api.negociosano.com` con reverse proxy, gzip y logging JSON
+- `pyproject.toml` con configuración de ruff, mypy y pytest-asyncio
+- CI/CD con GitHub Actions: `ci.yml` (tests en push) y `deploy.yml` (deploy SSH al VPS en push a main)
+- GitFlow inicializado con ramas `main` y `develop` publicadas en origin
+
 ### Changed
+- `.gitignore` ampliado con `backups/`, `*.sql.gz` y `.mypy_cache/`
+
 ### Fixed
 ### Removed
 
