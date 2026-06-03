@@ -7,6 +7,20 @@ from app.models.business import Business
 PLAN_LIMITS = {"free": 0, "pro": 1, "multi": 3}
 
 
+async def get_with_review_counts(session: AsyncSession, user_id: int) -> list[tuple]:
+    """Return (Business, review_count) tuples for a user, ordered by creation."""
+    from app.models.review import Review
+
+    result = await session.execute(
+        select(Business, func.count(Review.id))
+        .outerjoin(Review, Review.business_id == Business.id)
+        .where(Business.user_id == user_id)
+        .group_by(Business.id)
+        .order_by(Business.created_at)
+    )
+    return list(result.all())
+
+
 async def get_all_active(session: AsyncSession) -> list[Business]:
     """Return all non-paused businesses with their user eagerly loaded."""
     result = await session.execute(

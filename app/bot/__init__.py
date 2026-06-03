@@ -20,6 +20,7 @@ from app.bot.handlers.agregar import (
 )
 from app.bot.handlers.config import config_handler, handle_config_callback
 from app.bot.handlers.estado import estado
+from app.bot.handlers.negocios import negocios
 from app.bot.handlers.pausa import handle_pause_callback, pausa, reanudar
 from app.bot.handlers.reenviar import reenviar
 from app.bot.handlers.resenas import handle_resenas_callback, resenas
@@ -58,6 +59,7 @@ def create_application(token: str) -> Application:
     _application.add_handler(CommandHandler("pausa", pausa))
     _application.add_handler(CommandHandler("reanudar", reanudar))
     _application.add_handler(CommandHandler("estado", estado))
+    _application.add_handler(CommandHandler("negocios", negocios))
     _application.add_handler(CommandHandler("resenas", resenas))
     _application.add_handler(CommandHandler("responder", responder))
     _application.add_handler(agregar_conv)
