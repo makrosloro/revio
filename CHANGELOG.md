@@ -25,6 +25,12 @@ Versionado según [Semantic Versioning](https://semver.org/lang/es/).
 - `app/webhooks/stripe.py` — stub con validación de firma Stripe
 - `.env.example` con todas las variables requeridas
 
+- Agente 05: borradores IA con Claude Haiku — alertas negativas con borrador (Pro/Multi), resumen diario con borradores (máx 5), /responder con regeneración, tono configurable por negocio vía /config
+- `app/integrations/anthropic_client.py` — AnthropicClient con generate_negative_draft, generate_positive_draft, generate_draft_on_demand y tracking de tokens
+- `app/bot/handlers/responder.py` — /responder con selección de reseña, generación y botones Regenerar/Listo
+- Migración `0004` — tone DEFAULT 'cercano' en businesses, draft_type y ai_draft_tokens en alert_logs
+- `fix(email)` — SMTPSenderRefused al enviar email de activación (SMTP_FROM con comillas)
+
 - Agente 07: DevOps — `.dockerignore`, `scripts/backup.sh` con retención 7 días, `DEPLOYMENT_SERVER.md` alineado con flujo SSH real
 - CI/CD: `STRIPE_PRO_PRICE_ID` y `STRIPE_MULTI_PRICE_ID` añadidos a env vars de tests en `ci.yml` y `deploy.yml`
 
