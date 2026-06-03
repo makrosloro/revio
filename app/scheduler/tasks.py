@@ -28,12 +28,12 @@ def setup_jobs(scheduler: AsyncIOScheduler) -> None:
 
     scheduler.add_job(
         poll_all_businesses,
-        trigger=IntervalTrigger(hours=settings.POLLING_INTERVAL_HOURS),
+        trigger=IntervalTrigger(minutes=settings.POLLING_INTERVAL_MINUTES),
         id="poll_reviews",
         replace_existing=True,
         next_run_time=datetime.now(),
     )
-    logger.info("Job poll_reviews registrado (cada %dh)", settings.POLLING_INTERVAL_HOURS)
+    logger.info("Job poll_reviews registrado (cada %d min)", settings.POLLING_INTERVAL_MINUTES)
 
     scheduler.add_job(
         send_daily_digest,
