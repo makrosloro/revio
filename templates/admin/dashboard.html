@@ -2,62 +2,123 @@
 {% set active = "dashboard" %}
 {% block title %}Dashboard{% endblock %}
 {% block heading %}Dashboard{% endblock %}
+{% block subheading_text %}Vista general del sistema en tiempo real{% endblock %}
 
 {% block actions %}
 <form method="post" action="/admin/poll/all">
-  <button type="submit" class="bg-brand text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-brand-dark transition">
-    🔄 Forzar polling de todos los negocios
+  <button type="submit" onclick="return confirmAction('¿Lanzar polling de todos los negocios ahora?')"
+    class="flex items-center gap-2 bg-brand text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-brand-dark transition shadow-sm">
+    🔄 Forzar polling global
   </button>
 </form>
 {% endblock %}
 
 {% block content %}
 
-<!-- Stats grid -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-  <div class="bg-white rounded-xl border border-gray-200 p-5">
-    <p class="text-xs text-gray-500 mb-1">Usuarios activos</p>
-    <p class="text-3xl font-bold text-gray-900">{{ stats.total_users }}</p>
-    <p class="text-xs text-gray-400 mt-2">
-      Free: {{ stats.users_by_plan.get('free', 0) }} ·
-      Pro: {{ stats.users_by_plan.get('pro', 0) }} ·
-      Multi: {{ stats.users_by_plan.get('multi', 0) }}
-    </p>
-  </div>
-  <div class="bg-white rounded-xl border border-gray-200 p-5">
-    <p class="text-xs text-gray-500 mb-1">Negocios monitorizados</p>
-    <p class="text-3xl font-bold text-gray-900">{{ stats.active_businesses }}</p>
-    <p class="text-xs text-gray-400 mt-2">{{ stats.total_businesses }} total (incl. pausados)</p>
-  </div>
-  <div class="bg-white rounded-xl border border-gray-200 p-5">
-    <p class="text-xs text-gray-500 mb-1">Reseñas totales</p>
-    <p class="text-3xl font-bold text-gray-900">{{ stats.total_reviews }}</p>
-    <p class="text-xs text-gray-400 mt-2">
-      🔴 {{ stats.negative_reviews }} neg · 🌟 {{ stats.positive_reviews }} pos
-    </p>
-  </div>
-  <div class="bg-white rounded-xl border border-gray-200 p-5">
-    <p class="text-xs text-gray-500 mb-1">Alertas hoy</p>
-    <p class="text-3xl font-bold text-gray-900">{{ stats.alerts_today }}</p>
-    <p class="text-xs text-gray-400 mt-2">{{ stats.tokens_today | default(0) }} tokens IA usados</p>
-  </div>
-</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
 
-<!-- Plan breakdown -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-  {% for plan, label, color in [('free','Plan Free','bg-gray-100 text-gray-700'),('pro','Plan Pro','bg-green-100 text-green-800'),('multi','Plan Multi','bg-blue-100 text-blue-800')] %}
-  <div class="bg-white rounded-xl border border-gray-200 p-5">
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-sm font-semibold text-gray-700">{{ label }}</span>
-      <span class="text-xs font-bold px-2 py-1 rounded-full {{ color }}">
-        {{ stats.users_by_plan.get(plan, 0) }} usuarios
-      </span>
+  <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+    <div class="flex items-start justify-between">
+      <div>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Usuarios totales</p>
+        <p class="text-3xl font-bold text-gray-900">{{ stats.total_users }}</p>
+      </div>
+      <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-xl">👤</div>
     </div>
-    <div class="w-full bg-gray-100 rounded-full h-2">
-      <div class="bg-brand rounded-full h-2" style="width: {{ ((stats.users_by_plan.get(plan, 0) / (stats.total_users or 1)) * 100) | round }}%"></div>
+    <div class="mt-3 flex gap-2 flex-wrap">
+      <span class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">Free: {{ stats.users_by_plan.get('free', 0) }}</span>
+      <span class="bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded-full">Pro: {{ stats.users_by_plan.get('pro', 0) }}</span>
+      <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">Multi: {{ stats.users_by_plan.get('multi', 0) }}</span>
     </div>
   </div>
-  {% endfor %}
+
+  <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+    <div class="flex items-start justify-between">
+      <div>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Negocios activos</p>
+        <p class="text-3xl font-bold text-gray-900">{{ stats.active_businesses }}</p>
+      </div>
+      <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-xl">🏪</div>
+    </div>
+    <p class="text-xs text-gray-400 mt-3">{{ stats.total_businesses }} total · {{ stats.total_businesses - stats.active_businesses }} pausados</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+    <div class="flex items-start justify-between">
+      <div>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Reseñas capturadas</p>
+        <p class="text-3xl font-bold text-gray-900">{{ stats.total_reviews }}</p>
+      </div>
+      <div class="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center text-xl">⭐</div>
+    </div>
+    <div class="mt-3 flex gap-2">
+      <span class="bg-red-100 text-red-700 text-xs font-medium px-2 py-0.5 rounded-full">🔴 {{ stats.negative_reviews }} neg</span>
+      <span class="bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded-full">🌟 {{ stats.positive_reviews }} pos</span>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+    <div class="flex items-start justify-between">
+      <div>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Actividad hoy</p>
+        <p class="text-3xl font-bold text-gray-900">{{ stats.alerts_today }}</p>
+      </div>
+      <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-xl">📲</div>
+    </div>
+    <p class="text-xs text-gray-400 mt-3">alertas enviadas · {{ stats.tokens_today | default(0) }} tokens IA</p>
+  </div>
+
 </div>
 
+<!-- Second row -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+
+  <!-- Plan distribution -->
+  <div class="xl:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+    <h3 class="text-sm font-semibold text-gray-700 mb-4">Distribución por plan</h3>
+    {% set total = stats.total_users or 1 %}
+    {% for plan, label, bg, fg in [
+      ('free', 'Plan Free', 'bg-gray-200', 'bg-gray-500'),
+      ('pro', 'Plan Pro', 'bg-green-100', 'bg-brand'),
+      ('multi', 'Plan Multi', 'bg-blue-100', 'bg-blue-500')
+    ] %}
+    {% set count = stats.users_by_plan.get(plan, 0) %}
+    {% set pct = ((count / total) * 100) | round | int %}
+    <div class="mb-4">
+      <div class="flex justify-between items-center mb-1.5">
+        <span class="text-sm text-gray-600">{{ label }}</span>
+        <span class="text-sm font-semibold text-gray-900">{{ count }} <span class="text-gray-400 font-normal">({{ pct }}%)</span></span>
+      </div>
+      <div class="w-full {{ bg }} rounded-full h-2.5">
+        <div class="{{ fg }} rounded-full h-2.5 transition-all" style="width:{{ pct }}%"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Status summary -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+    <h3 class="text-sm font-semibold text-gray-700 mb-4">Estado del sistema</h3>
+    <div class="space-y-3">
+      <div class="flex items-center justify-between py-2 border-b border-gray-100">
+        <span class="text-sm text-gray-600">Usuarios bloqueados</span>
+        <span class="text-sm font-semibold {% if stats.blocked_users > 0 %}text-red-600{% else %}text-gray-400{% endif %}">{{ stats.blocked_users }}</span>
+      </div>
+      <div class="flex items-center justify-between py-2 border-b border-gray-100">
+        <span class="text-sm text-gray-600">Negocios pausados</span>
+        <span class="text-sm font-semibold text-gray-700">{{ stats.total_businesses - stats.active_businesses }}</span>
+      </div>
+      <div class="flex items-center justify-between py-2 border-b border-gray-100">
+        <span class="text-sm text-gray-600">Reseñas negativas</span>
+        <span class="text-sm font-semibold text-red-600">{{ stats.negative_reviews }}</span>
+      </div>
+      <div class="flex items-center justify-between py-2">
+        <span class="text-sm text-gray-600">Tokens IA hoy</span>
+        <span class="text-sm font-semibold text-gray-700">{{ stats.tokens_today | default(0) }}</span>
+      </div>
+    </div>
+  </div>
+
+</div>
 {% endblock %}
