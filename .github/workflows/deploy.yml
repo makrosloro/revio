@@ -121,11 +121,13 @@ jobs:
             # Health check
             curl -f http://localhost:8000/health || (echo "❌ Health check fallido" && exit 1)
 
-            # Recargar Caddy si el Caddyfile ha cambiado
-            if git diff HEAD~1 --name-only | grep -q "Caddyfile"; then
-              sudo cp Caddyfile /etc/caddy/Caddyfile
-              sudo systemctl reload caddy
-              echo "♻️  Caddy recargado"
+            # Recargar Caddy si el Caddyfile ha cambiado (no falla el deploy si no hay sudo)
+            if git diff HEAD~1 --name-only 2>/dev/null | grep -q "Caddyfile"; then
+              if sudo cp Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy; then
+                echo "♻️  Caddy recargado"
+              else
+                echo "⚠️  Caddy reload saltado — configura sudo NOPASSWD para deploy"
+              fi
             fi
 
             echo "✅ Deploy ${{ steps.version.outputs.VERSION }} completado"
