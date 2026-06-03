@@ -20,31 +20,40 @@ async def activar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def run_activar(update: Update, context: ContextTypes.DEFAULT_TYPE, token: str) -> None:
     telegram_user_id = update.effective_user.id
 
-    async with AsyncSessionLocal() as session:
-        user = await user_repo.get_by_activation_token(session, token)
+    try:
+        async with AsyncSessionLocal() as session:
+            user = await user_repo.get_by_activation_token(session, token)
 
-        if not user:
-            await update.effective_message.reply_text(
-                "Token no válido. Revisa el email o usa /suscribir para obtener uno nuevo."
-            )
-            return
+            if not user:
+                await update.effective_message.reply_text(
+                    "Token no válido. Revisa el email o usa /suscribir para obtener uno nuevo."
+                )
+                return
 
-        if user.token_expires_at and user.token_expires_at < datetime.now(timezone.utc):
-            await update.effective_message.reply_text(
-                "El token ha caducado (válido 48h). Contacta con soporte para renovarlo."
-            )
-            return
+            if user.token_expires_at and user.token_expires_at < datetime.now(timezone.utc):
+                await update.effective_message.reply_text(
+                    "El token ha caducado (válido 48h). Usa /suscribir para renovarlo."
+                )
+                return
 
-        if user.telegram_user_id and user.telegram_user_id != telegram_user_id:
-            await update.effective_message.reply_text(
-                "Este token ya está vinculado a otra cuenta de Telegram."
-            )
-            return
+            if user.telegram_user_id and user.telegram_user_id != telegram_user_id:
+                await update.effective_message.reply_text(
+                    "Este token ya está vinculado a otra cuenta de Telegram."
+                )
+                return
 
-        await user_repo.activate(session, user.id, telegram_user_id)
+            activated = await user_repo.activate(session, user.id, telegram_user_id)
+            plan = (activated or user).plan
+            user_id = (activated or user).id
+    except Exception:
+        logger.exception("Error activating token for telegram_user_id %s", telegram_user_id)
+        await update.effective_message.reply_text(
+            "Algo fue mal al activar tu cuenta. Inténtalo de nuevo en unos minutos."
+        )
+        return
 
     await update.effective_message.reply_text(
-        f"Cuenta activada correctamente. Plan: {user.plan.capitalize()}\n"
+        f"✅ Cuenta activada correctamente. Plan: {plan.capitalize()}\n"
         "Usa /agregar para añadir tu primer negocio."
     )
-    logger.info("User %s activated telegram_user_id %s", user.id, telegram_user_id)
+    logger.info("User %s activated telegram_user_id %s", user_id, telegram_user_id)

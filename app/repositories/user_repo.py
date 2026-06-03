@@ -53,17 +53,43 @@ async def create_from_stripe(
 
 
 async def activate(session: AsyncSession, user_id: int, telegram_user_id: int) -> User | None:
+    """Activate a user account by linking its Telegram ID.
+
+    If another account already uses this telegram_user_id (e.g. a previous free
+    signup), merge the paid plan onto that existing account and remove the
+    orphan row, so the user keeps their Telegram link and any businesses.
+    """
     result = await session.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
-    if not user:
+    token_user = result.scalar_one_or_none()
+    if not token_user:
         return None
-    user.telegram_user_id = telegram_user_id
-    user.activation_token = None
-    user.token_expires_at = None
-    user.is_active = True
+
+    existing = await get_by_telegram_id(session, telegram_user_id)
+
+    if existing and existing.id != token_user.id:
+        # Merge: upgrade the existing (Telegram-linked) account with paid data
+        existing.email = token_user.email or existing.email
+        existing.stripe_customer_id = token_user.stripe_customer_id or existing.stripe_customer_id
+        existing.stripe_subscription_id = (
+            token_user.stripe_subscription_id or existing.stripe_subscription_id
+        )
+        existing.plan = token_user.plan
+        existing.sub_status = token_user.sub_status
+        existing.activation_token = None
+        existing.token_expires_at = None
+        existing.is_active = True
+        await session.delete(token_user)
+        await session.commit()
+        await session.refresh(existing)
+        return existing
+
+    token_user.telegram_user_id = telegram_user_id
+    token_user.activation_token = None
+    token_user.token_expires_at = None
+    token_user.is_active = True
     await session.commit()
-    await session.refresh(user)
-    return user
+    await session.refresh(token_user)
+    return token_user
 
 
 async def update_subscription(
