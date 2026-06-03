@@ -88,6 +88,20 @@ async def get_by_stripe_customer(session: AsyncSession, stripe_customer_id: str)
     return result.scalar_one_or_none()
 
 
+async def create_free_user(session: AsyncSession, telegram_user_id: int) -> User:
+    """Create a free-plan user directly from Telegram (no Stripe)."""
+    user = User(
+        telegram_user_id=telegram_user_id,
+        plan="free",
+        sub_status="active",
+        is_active=True,
+    )
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+    return user
+
+
 async def refresh_activation_token(session: AsyncSession, user_id: int) -> str:
     """Generate a fresh activation token (re-subscriptions or token expiry)."""
     token = uuid.uuid4().hex

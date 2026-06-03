@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from sqlalchemy import text
 from telegram import Update
 
+from app.admin.router import router as admin_router
 from app.bot import create_application
 from app.config import settings
 from app.database import AsyncSessionLocal, engine
@@ -44,6 +45,7 @@ app = FastAPI(title="NegocioSano", lifespan=lifespan)
 
 app.include_router(stripe_router, prefix="/webhook")
 app.include_router(telegram_router)
+app.include_router(admin_router)
 
 
 @app.get("/health")

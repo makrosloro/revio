@@ -1,0 +1,63 @@
+{% extends "admin/base.html" %}
+{% set active = "dashboard" %}
+{% block title %}Dashboard{% endblock %}
+{% block heading %}Dashboard{% endblock %}
+
+{% block actions %}
+<form method="post" action="/admin/poll/all">
+  <button type="submit" class="bg-brand text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-brand-dark transition">
+    🔄 Forzar polling de todos los negocios
+  </button>
+</form>
+{% endblock %}
+
+{% block content %}
+
+<!-- Stats grid -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <p class="text-xs text-gray-500 mb-1">Usuarios activos</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.total_users }}</p>
+    <p class="text-xs text-gray-400 mt-2">
+      Free: {{ stats.users_by_plan.get('free', 0) }} ·
+      Pro: {{ stats.users_by_plan.get('pro', 0) }} ·
+      Multi: {{ stats.users_by_plan.get('multi', 0) }}
+    </p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <p class="text-xs text-gray-500 mb-1">Negocios monitorizados</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.active_businesses }}</p>
+    <p class="text-xs text-gray-400 mt-2">{{ stats.total_businesses }} total (incl. pausados)</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <p class="text-xs text-gray-500 mb-1">Reseñas totales</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.total_reviews }}</p>
+    <p class="text-xs text-gray-400 mt-2">
+      🔴 {{ stats.negative_reviews }} neg · 🌟 {{ stats.positive_reviews }} pos
+    </p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <p class="text-xs text-gray-500 mb-1">Alertas hoy</p>
+    <p class="text-3xl font-bold text-gray-900">{{ stats.alerts_today }}</p>
+    <p class="text-xs text-gray-400 mt-2">{{ stats.tokens_today | default(0) }} tokens IA usados</p>
+  </div>
+</div>
+
+<!-- Plan breakdown -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  {% for plan, label, color in [('free','Plan Free','bg-gray-100 text-gray-700'),('pro','Plan Pro','bg-green-100 text-green-800'),('multi','Plan Multi','bg-blue-100 text-blue-800')] %}
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-sm font-semibold text-gray-700">{{ label }}</span>
+      <span class="text-xs font-bold px-2 py-1 rounded-full {{ color }}">
+        {{ stats.users_by_plan.get(plan, 0) }} usuarios
+      </span>
+    </div>
+    <div class="w-full bg-gray-100 rounded-full h-2">
+      <div class="bg-brand rounded-full h-2" style="width: {{ ((stats.users_by_plan.get(plan, 0) / (stats.total_users or 1)) * 100) | round }}%"></div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
