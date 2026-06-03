@@ -28,7 +28,6 @@ backups/
 
 .github/
 docs/
-scripts/
 
 docker-compose*.yml
 Caddyfile
