@@ -4,6 +4,11 @@ Uso (dentro del contenedor):
     docker compose -f docker-compose.prod.yml exec app python scripts/diagnose_reviews.py
 """
 import asyncio
+import os
+import sys
+
+# Make the project root importable when run as `python scripts/diagnose_reviews.py`
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import select
 
