@@ -1,7 +1,6 @@
 import logging
-import re
 
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 from app.bot.middleware import require_subscription
@@ -11,23 +10,12 @@ from app.repositories import business_repo
 
 logger = logging.getLogger(__name__)
 
-ASKING_NAME = 0
-ASKING_LINK = 1
+# Conversation states
+ASKING_SEARCH = 0
+SELECTING_PLACE = 1
+CONFIRMING_OWNERSHIP = 2
 
 PLAN_LIMITS = {"free": 0, "pro": 1, "multi": 3}
-
-
-def _extract_place_id(text: str) -> str | None:
-    text = text.strip()
-    if re.match(r"^ChIJ[A-Za-z0-9_-]+$", text):
-        return text
-    match = re.search(r"place_id=([A-Za-z0-9_-]+)", text)
-    if match:
-        return match.group(1)
-    match = re.search(r"!1s(ChIJ[A-Za-z0-9_-]+)", text)
-    if match:
-        return match.group(1)
-    return None
 
 
 @require_subscription(min_plan="pro")
@@ -45,55 +33,155 @@ async def agregar(update: Update, context: ContextTypes.DEFAULT_TYPE, user: User
 
     context.user_data["agregar_user_id"] = user.id
     await update.message.reply_text(
-        "¿Cómo se llama el negocio? (ej: Restaurante El Rincón)\n\n"
-        "Escribe /cancelar para salir."
+        "¿Cómo se llama tu negocio?\n"
+        "Incluye la ciudad para encontrarlo mejor.\n\n"
+        "Ejemplo: *Restaurante El Rincón Madrid*\n\n"
+        "Escribe /cancelar para salir.",
+        parse_mode="Markdown",
     )
-    return ASKING_NAME
+    return ASKING_SEARCH
 
 
-async def handle_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    name = update.message.text.strip()[:255]
-    if not name:
-        await update.message.reply_text("El nombre no puede estar vacío. Inténtalo de nuevo.")
-        return ASKING_NAME
+async def handle_search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.message.text.strip()
+    if not query:
+        await update.message.reply_text("Escribe el nombre de tu negocio.")
+        return ASKING_SEARCH
 
-    context.user_data["agregar_name"] = name
-    await update.message.reply_text(
-        f"Nombre guardado: {name}\n\n"
-        "Ahora pega el Place ID de Google Maps o la URL de Google Maps.\n"
-        "Puedes encontrar el Place ID en Google Places API o en la URL de Google Maps.\n\n"
-        "Escribe /cancelar para salir."
-    )
-    return ASKING_LINK
+    await update.message.reply_text("🔍 Buscando...")
 
+    from app.integrations.google_places import GooglePlacesClient
+    results = await GooglePlacesClient().search_by_text(query)
 
-async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    text = update.message.text.strip()[:500]
-    place_id = _extract_place_id(text)
-
-    if not place_id:
+    if not results:
         await update.message.reply_text(
-            "No pude extraer el Place ID de ese texto.\n"
-            "Pega directamente el Place ID (empieza por ChIJ...) o la URL completa de Google Maps.\n"
+            "No encontré ningún negocio con ese nombre.\n"
+            "Prueba con otro nombre o añade la ciudad.\n\n"
             "Escribe /cancelar para salir."
         )
-        return ASKING_LINK
+        return ASKING_SEARCH
 
-    user_id = context.user_data.get("agregar_user_id")
-    name = context.user_data.get("agregar_name")
+    context.user_data["search_results"] = results
 
-    async with AsyncSessionLocal() as session:
-        business = await business_repo.create(session, user_id, name, place_id)
+    rows = []
+    for i, place in enumerate(results):
+        address_short = place["address"][:50] + ("…" if len(place["address"]) > 50 else "")
+        rows.append([
+            InlineKeyboardButton(
+                f"📍 {place['name']} — {address_short}",
+                callback_data=f"place_sel_{i}",
+            )
+        ])
+    rows.append([InlineKeyboardButton("🔍 Buscar de nuevo", callback_data="place_retry")])
+    rows.append([InlineKeyboardButton("❌ Cancelar", callback_data="place_cancel")])
 
     await update.message.reply_text(
-        f"Negocio añadido correctamente.\n"
-        f"Nombre: {business.name}\n"
-        f"Place ID: {business.google_place_id}\n\n"
-        "Empezaré a monitorizar las reseñas en el próximo ciclo de polling."
+        "¿Cuál es tu negocio?",
+        reply_markup=InlineKeyboardMarkup(rows),
     )
-    logger.info("Business %s added for user %s", business.id, user_id)
-    context.user_data.clear()
-    return ConversationHandler.END
+    return SELECTING_PLACE
+
+
+async def handle_place_select(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    await query.answer()
+    data = query.data
+
+    if data == "place_cancel":
+        context.user_data.clear()
+        await query.edit_message_text("Operación cancelada.")
+        return ConversationHandler.END
+
+    if data == "place_retry":
+        await query.edit_message_text(
+            "¿Cómo se llama tu negocio?\n"
+            "Incluye la ciudad para encontrarlo mejor.\n\n"
+            "Escribe /cancelar para salir."
+        )
+        return ASKING_SEARCH
+
+    if data.startswith("place_sel_"):
+        try:
+            index = int(data[len("place_sel_"):])
+        except ValueError:
+            await query.edit_message_text("Error inesperado. Usa /agregar para intentarlo de nuevo.")
+            return ConversationHandler.END
+
+        results = context.user_data.get("search_results", [])
+        if index >= len(results):
+            await query.edit_message_text("Error inesperado. Usa /agregar para intentarlo de nuevo.")
+            return ConversationHandler.END
+
+        place = results[index]
+        context.user_data["selected_place"] = place
+
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("✅ Confirmar — soy el propietario", callback_data="owner_confirm")],
+            [InlineKeyboardButton("🔍 Buscar de nuevo", callback_data="owner_retry")],
+            [InlineKeyboardButton("❌ Cancelar", callback_data="owner_cancel")],
+        ])
+
+        await query.edit_message_text(
+            f"Vas a añadir:\n\n"
+            f"📍 *{place['name']}*\n"
+            f"📌 {place['address']}\n\n"
+            f"Al confirmar, declaras que eres el propietario o representante "
+            f"autorizado de este negocio y aceptas nuestros Términos de Servicio.",
+            parse_mode="Markdown",
+            reply_markup=keyboard,
+        )
+        return CONFIRMING_OWNERSHIP
+
+    return SELECTING_PLACE
+
+
+async def handle_ownership_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    await query.answer()
+    data = query.data
+
+    if data == "owner_cancel":
+        context.user_data.clear()
+        await query.edit_message_text("Operación cancelada.")
+        return ConversationHandler.END
+
+    if data == "owner_retry":
+        await query.edit_message_text(
+            "¿Cómo se llama tu negocio?\n"
+            "Incluye la ciudad para encontrarlo mejor.\n\n"
+            "Escribe /cancelar para salir."
+        )
+        return ASKING_SEARCH
+
+    if data == "owner_confirm":
+        place = context.user_data.get("selected_place")
+        user_id = context.user_data.get("agregar_user_id")
+
+        if not place or not user_id:
+            await query.edit_message_text("Error inesperado. Usa /agregar para intentarlo de nuevo.")
+            return ConversationHandler.END
+
+        async with AsyncSessionLocal() as session:
+            business = await business_repo.create(
+                session,
+                user_id=user_id,
+                name=place["name"],
+                google_place_id=place["id"],
+                self_declared_owner=True,
+            )
+
+        logger.info("Business %d added for user %d via text search", business.id, user_id)
+        context.user_data.clear()
+
+        await query.edit_message_text(
+            f"✅ *{business.name}* añadido correctamente.\n\n"
+            f"📌 {place['address']}\n\n"
+            f"Empezaré a monitorizar las reseñas en el próximo ciclo (cada 2 horas).",
+            parse_mode="Markdown",
+        )
+        return ConversationHandler.END
+
+    return CONFIRMING_OWNERSHIP
 
 
 async def cancel_agregar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

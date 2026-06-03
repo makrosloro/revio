@@ -9,12 +9,14 @@ from telegram.ext import (
 
 from app.bot.handlers.activar import activar
 from app.bot.handlers.agregar import (
-    ASKING_LINK,
-    ASKING_NAME,
+    ASKING_SEARCH,
+    CONFIRMING_OWNERSHIP,
+    SELECTING_PLACE,
     agregar,
     cancel_agregar,
-    handle_link,
-    handle_name,
+    handle_ownership_confirm,
+    handle_place_select,
+    handle_search,
 )
 from app.bot.handlers.config import config_handler, handle_config_callback
 from app.bot.handlers.estado import estado
@@ -40,8 +42,9 @@ def create_application(token: str) -> Application:
     agregar_conv = ConversationHandler(
         entry_points=[CommandHandler("agregar", agregar)],
         states={
-            ASKING_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_name)],
-            ASKING_LINK: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_link)],
+            ASKING_SEARCH: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_search)],
+            SELECTING_PLACE: [CallbackQueryHandler(handle_place_select, pattern="^place_")],
+            CONFIRMING_OWNERSHIP: [CallbackQueryHandler(handle_ownership_confirm, pattern="^owner_")],
         },
         fallbacks=[CommandHandler("cancelar", cancel_agregar)],
     )

@@ -33,9 +33,18 @@ async def get_by_id(session: AsyncSession, business_id: int, user_id: int) -> Bu
 
 
 async def create(
-    session: AsyncSession, user_id: int, name: str, google_place_id: str
+    session: AsyncSession,
+    user_id: int,
+    name: str,
+    google_place_id: str,
+    self_declared_owner: bool = False,
 ) -> Business:
-    business = Business(user_id=user_id, name=name, google_place_id=google_place_id)
+    business = Business(
+        user_id=user_id,
+        name=name,
+        google_place_id=google_place_id,
+        self_declared_owner=self_declared_owner,
+    )
     session.add(business)
     await session.commit()
     await session.refresh(business)
