@@ -110,7 +110,7 @@ jobs:
 
             # Rebuild y restart solo del contenedor app (la BD no se toca)
             docker compose -f docker-compose.prod.yml build app
-            docker compose -f docker-compose.prod.yml up -d app
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans app
 
             # Esperar a que la app arranque
             sleep 15
