@@ -74,11 +74,12 @@ async def _on_checkout_completed(session: dict) -> None:
         existing = await user_repo.get_by_email(db, email)
         if existing:
             await user_repo.update_subscription(db, existing.stripe_subscription_id or stripe_sub_id, "active", plan)
-            user = existing
+            token = await user_repo.refresh_activation_token(db, existing.id)
         else:
             user = await user_repo.create_from_stripe(db, email, stripe_customer_id, stripe_sub_id, plan)
+            token = user.activation_token
 
-    await send_activation_email(email, user.activation_token)
+    await send_activation_email(email, token)
     logger.info("New subscription: email=%s plan=%s", email, plan)
 
 
