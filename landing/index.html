@@ -3,80 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NegocioSano — Gestiona tu reputación en Google sin esfuerzo</title>
-  <meta name="description" content="Alertas inmediatas de reseñas negativas y borradores de respuesta con IA para restaurantes, bares y tiendas. Desde 29€/mes.">
-  <meta property="og:title" content="NegocioSano — Tu reputación en Google, bajo control">
-  <meta property="og:description" content="Alerta inmediata cuando alguien deja una reseña negativa. Borrador de respuesta listo para copiar en segundos.">
+  <title>NegocioSano — Reputación online para tu negocio</title>
+  <meta name="description" content="Alertas inmediatas de reseñas negativas y borradores de respuesta con IA. Para restaurantes, bares y tiendas. Desde 0€.">
+  <meta property="og:title" content="NegocioSano — Nunca más te pierdas una reseña negativa">
+  <meta property="og:description" content="Alerta en Telegram al instante. Borrador de respuesta con IA en segundos. Sin apps extra.">
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ─── NAVBAR ─── -->
-<nav class="nav">
-  <div class="nav__inner">
+<!-- ─── NAV ──────────────────────────────────────────────────── -->
+<nav class="nav" id="nav">
+  <div class="nav__inner container">
     <a href="/" class="nav__logo">
-      <span class="nav__logo-icon">🌿</span>
-      <span>NegocioSano</span>
+      <span class="logo-mark">NS</span>
+      <span class="logo-text">NegocioSano</span>
     </a>
-    <div class="nav__links">
-      <a href="#como-funciona">Cómo funciona</a>
-      <a href="#planes">Precios</a>
-      <a href="#faq">FAQ</a>
+    <ul class="nav__links">
+      <li><a href="#como-funciona">Cómo funciona</a></li>
+      <li><a href="#planes">Precios</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav__cta">
+      <a href="https://t.me/NegocioSanoBot" class="btn btn--sm btn--outline" target="_blank" rel="noopener">Iniciar sesión</a>
+      <a href="#planes" class="btn btn--sm">Ver planes</a>
     </div>
-    <a href="https://t.me/NegocioSanoBot" class="btn btn--sm" target="_blank" rel="noopener">Empezar gratis</a>
-    <button class="nav__burger" aria-label="Menú" id="burger">
+    <button class="nav__burger" id="burger" aria-label="Menú">
       <span></span><span></span><span></span>
     </button>
   </div>
   <div class="nav__mobile" id="mobileMenu">
-    <a href="#como-funciona" class="nav__mobile-link">Cómo funciona</a>
-    <a href="#planes" class="nav__mobile-link">Precios</a>
-    <a href="#faq" class="nav__mobile-link">FAQ</a>
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#planes">Precios</a>
+    <a href="#faq">FAQ</a>
     <a href="https://t.me/NegocioSanoBot" class="btn btn--full" target="_blank" rel="noopener">Empezar gratis</a>
   </div>
 </nav>
 
-<!-- ─── HERO ─── -->
+<!-- ─── HERO ─────────────────────────────────────────────────── -->
 <section class="hero">
-  <div class="container">
-    <div class="badge">🚀 Fase beta — precios de lanzamiento</div>
-    <h1 class="hero__title">
-      Sé el primero en<br>
-      responder a tus<br>
-      <span class="highlight">reseñas de Google</span>
-    </h1>
-    <p class="hero__sub">
-      Alerta instantánea cuando llega una reseña negativa.<br>
-      Borrador de respuesta generado por IA en segundos.<br>
-      Todo desde Telegram, sin apps extra.
-    </p>
-    <div class="hero__cta">
-      <a href="https://t.me/NegocioSanoBot" class="btn btn--lg" target="_blank" rel="noopener">
-        Empezar gratis →
-      </a>
-      <a href="#planes" class="btn btn--ghost btn--lg">Ver precios</a>
+  <div class="hero__bg-grid"></div>
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <div class="hero__eyebrow">
+        <span class="dot"></span>
+        Nuevo · Disponible para negocios en España
+      </div>
+      <h1 class="hero__title">
+        Controla tu reputación en
+        <span class="text-gradient">Google Maps</span>
+        desde Telegram
+      </h1>
+      <p class="hero__desc">
+        Recibe una alerta en segundos cuando alguien deja una reseña negativa.
+        La IA genera un borrador de respuesta personalizado para que respondas en menos de un minuto.
+      </p>
+      <div class="hero__actions">
+        <a href="https://t.me/NegocioSanoBot" class="btn btn--lg btn--primary" target="_blank" rel="noopener">
+          Empezar gratis →
+        </a>
+        <a href="#como-funciona" class="btn btn--lg btn--ghost-dark">
+          Ver cómo funciona
+        </a>
+      </div>
+      <div class="hero__trust">
+        <span>✓ Plan gratuito permanente</span>
+        <span>✓ Sin tarjeta de crédito</span>
+        <span>✓ Cancela cuando quieras</span>
+      </div>
     </div>
-    <div class="hero__trust">
-      <span>✓ Sin tarjeta de crédito</span>
-      <span>✓ Configuración en 5 minutos</span>
-      <span>✓ Cancela cuando quieras</span>
-    </div>
-    <div class="hero__preview">
-      <div class="phone-mock">
-        <div class="chat-bubble chat-bubble--alert">
-          <div class="chat-bubble__tag">🔴 Nueva reseña negativa — Bar El Rincón</div>
-          <div class="chat-bubble__body">
-            <strong>⭐ 2/5 · María G. · 03/06/2026</strong><br>
-            📍 Google Maps<br><br>
-            "Llevamos 40 minutos esperando y la comida llegó fría. El camarero ni se disculpó."
+
+    <div class="hero__visual">
+      <div class="mockup">
+        <div class="mockup__header">
+          <div class="mockup__dot r"></div>
+          <div class="mockup__dot y"></div>
+          <div class="mockup__dot g"></div>
+          <span class="mockup__title">NegocioSano Bot</span>
+        </div>
+        <div class="mockup__body">
+          <div class="msg msg--alert">
+            <div class="msg__badge">🔴 Nueva reseña negativa</div>
+            <div class="msg__biz">Bar El Rincón · Google Maps</div>
+            <div class="msg__rating">⭐⭐ 2/5 · Ana García · hace 3 min</div>
+            <div class="msg__text">"Llevamos 40 minutos esperando y la comida llegó fría. El camarero ni se disculpó."</div>
+            <div class="msg__draft">
+              <span class="msg__draft-label">💬 Borrador de respuesta:</span>
+              <p>Ana, gracias por tu feedback. Sentimos que tu experiencia no estuvo a la altura. Te invitamos a contactarnos directamente para compensarlo. Trabajamos cada día para mejorar nuestro servicio.</p>
+            </div>
+            <div class="msg__time">14:32</div>
           </div>
-          <div class="chat-bubble__draft">
-            <strong>💬 Borrador de respuesta:</strong><br>
-            María, gracias por tu feedback. Sentimos que tu experiencia no estuvo a la altura. Te invitamos a contactarnos directamente en el local para compensarlo. Trabajamos cada día para mejorar.
+          <div class="msg msg--positive">
+            <div class="msg__badge msg__badge--pos">🌟 Resumen de hoy</div>
+            <div class="msg__text">Has recibido <strong>4 reseñas positivas</strong> hoy.</div>
+            <div class="msg__time">21:00</div>
           </div>
         </div>
       </div>
@@ -84,130 +107,156 @@
   </div>
 </section>
 
-<!-- ─── PROBLEMA ─── -->
-<section class="problem">
+<!-- ─── LOGOS / SOCIAL PROOF ─────────────────────────────────── -->
+<section class="proof">
   <div class="container">
-    <div class="problem__grid">
-      <div class="problem__item problem__item--bad">
-        <div class="problem__icon">😰</div>
+    <p class="proof__label">Diseñado para</p>
+    <div class="proof__items">
+      <span>🍽️ Restaurantes</span>
+      <span>☕ Cafeterías</span>
+      <span>🍺 Bares y pubs</span>
+      <span>🏨 Hoteles</span>
+      <span>💇 Peluquerías</span>
+      <span>🛍️ Tiendas</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROBLEMA / SOLUCIÓN ───────────────────────────────────── -->
+<section class="split">
+  <div class="container">
+    <div class="section-tag">El problema</div>
+    <h2 class="section-title">Cada reseña negativa sin respuesta<br>te cuesta clientes</h2>
+    <p class="section-desc">El 97% de los consumidores lee reseñas online antes de visitar un negocio.<br>
+    Si no respondes, parece que no te importa.</p>
+
+    <div class="split__grid">
+      <div class="split__card split__card--bad">
+        <div class="split__icon">😰</div>
         <h3>Sin NegocioSano</h3>
         <ul>
-          <li>Te enteras de la reseña días después</li>
+          <li>Te enteras días después de la reseña</li>
           <li>No sabes qué responder sin quedar mal</li>
-          <li>Las reseñas sin respuesta dañan tu ranking</li>
-          <li>Pierdes clientes potenciales que leen los comentarios</li>
+          <li>Las reseñas sin respuesta dañan tu posición en Google</li>
+          <li>Pierdes clientes que leen los comentarios</li>
+          <li>Cada hora sin responder empeora la situación</li>
         </ul>
       </div>
-      <div class="problem__item problem__item--good">
-        <div class="problem__icon">😌</div>
+      <div class="split__card split__card--good">
+        <div class="split__icon">😌</div>
         <h3>Con NegocioSano</h3>
         <ul>
-          <li>Alerta inmediata en Telegram en cuanto llega</li>
-          <li>Borrador de respuesta listo para copiar</li>
-          <li>Respondes en minutos, no en días</li>
-          <li>Google premia a los negocios que responden activamente</li>
+          <li>Alerta en Telegram en cuanto llega</li>
+          <li>Borrador de respuesta generado por IA al instante</li>
+          <li>Respondes en menos de un minuto</li>
+          <li>Google premia a los negocios que responden</li>
+          <li>Resumen diario de reseñas positivas también</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── CÓMO FUNCIONA ─── -->
+<!-- ─── CÓMO FUNCIONA ────────────────────────────────────────── -->
 <section class="steps" id="como-funciona">
   <div class="container">
-    <div class="section-header">
-      <h2>Configuración en 5 minutos</h2>
-      <p>Sin instalar apps. Sin dashboards complicados. Todo en Telegram.</p>
-    </div>
+    <div class="section-tag">Proceso</div>
+    <h2 class="section-title">Configuración en 5 minutos</h2>
+    <p class="section-desc">Sin instalar apps. Sin dashboards complicados. Todo en Telegram, la app que ya tienes.</p>
+
     <div class="steps__grid">
       <div class="step-card">
-        <div class="step-card__num">1</div>
-        <div class="step-card__icon">💳</div>
+        <div class="step-num">01</div>
+        <div class="step-icon">💳</div>
         <h3>Elige tu plan</h3>
-        <p>Free, Pro o Multi. Pago seguro con Stripe. Activas tu cuenta al instante con un email automático.</p>
+        <p>Free, Pro o Multi. El gratuito no necesita tarjeta. Los de pago se activan al instante tras el pago.</p>
       </div>
+      <div class="step-line"></div>
       <div class="step-card">
-        <div class="step-card__num">2</div>
-        <div class="step-card__icon">🏪</div>
+        <div class="step-num">02</div>
+        <div class="step-icon">🔍</div>
         <h3>Añade tu negocio</h3>
-        <p>Busca tu negocio por nombre en el bot. Lo encontramos en Google Maps en segundos. Sin Place IDs ni tecnicismos.</p>
+        <p>Busca tu negocio por nombre en el bot. Lo encontramos en Google Maps en segundos. Sin códigos ni tecnicismos.</p>
       </div>
+      <div class="step-line"></div>
       <div class="step-card">
-        <div class="step-card__num">3</div>
-        <div class="step-card__icon">📲</div>
+        <div class="step-num">03</div>
+        <div class="step-icon">📲</div>
         <h3>Recibe alertas y responde</h3>
-        <p>Cada nueva reseña negativa te llega al móvil con un borrador de respuesta listo para copiar y pegar en Google.</p>
+        <p>Cada reseña negativa llega a Telegram con un borrador listo. Copias, pegas en Google y listo.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── CARACTERÍSTICAS ─── -->
+<!-- ─── CARACTERÍSTICAS ──────────────────────────────────────── -->
 <section class="features">
   <div class="container">
-    <div class="section-header">
-      <h2>Todo lo que necesitas para tu reputación</h2>
-    </div>
     <div class="features__grid">
-      <div class="feature">
-        <div class="feature__icon">⚡</div>
-        <h3>Alertas inmediatas</h3>
-        <p>Monitorizamos Google Maps cada 2 horas. Cuando llega una reseña negativa, te avisamos al momento por Telegram.</p>
+      <div class="features__intro">
+        <div class="section-tag">Funcionalidades</div>
+        <h2 class="section-title" style="text-align:left">Todo lo que necesitas para tu reputación online</h2>
+        <p class="section-desc" style="text-align:left">Diseñado específicamente para el pequeño hostelero español. Sin complicaciones.</p>
       </div>
-      <div class="feature">
-        <div class="feature__icon">🤖</div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:#fef2f2">⚡</div>
+        <h3>Alertas en tiempo real</h3>
+        <p>Revisamos Google Maps cada 2 horas. Si hay una reseña negativa, te llega al móvil al momento.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:#f0fdf4">🤖</div>
         <h3>Borradores con IA</h3>
-        <p>Claude AI redacta una respuesta personalizada en el tono de tu negocio: cercano, profesional o formal. Tú solo copias y pegas.</p>
+        <p>Claude AI (Anthropic) redacta una respuesta en el tono de tu negocio: cercano, profesional o formal.</p>
       </div>
-      <div class="feature">
-        <div class="feature__icon">🌟</div>
-        <h3>Resumen diario de positivas</h3>
-        <p>A las 21:00 recibes un resumen de todas las reseñas buenas del día, también con borradores de respuesta para reforzar la relación.</p>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:#fefce8">🌟</div>
+        <h3>Resumen de positivas</h3>
+        <p>A las 21:00 recibes un resumen de las reseñas buenas del día, también con borradores de respuesta.</p>
       </div>
-      <div class="feature">
-        <div class="feature__icon">📊</div>
-        <h3>Múltiples plataformas</h3>
-        <p>Google Maps ya activo. TripAdvisor y Booking próximamente. Todo desde el mismo bot de Telegram.</p>
-      </div>
-      <div class="feature">
-        <div class="feature__icon">🎭</div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:#eff6ff">🎭</div>
         <h3>Tono personalizable</h3>
-        <p>Elige si quieres respuestas en tono cercano, profesional o formal. La IA se adapta a la personalidad de tu negocio.</p>
+        <p>Configura si quieres respuestas cercanas, profesionales o formales. La IA se adapta a tu estilo.</p>
       </div>
-      <div class="feature">
-        <div class="feature__icon">🏪</div>
-        <h3>Hasta 3 locales</h3>
-        <p>Plan Multi para cadenas pequeñas o propietarios con varios negocios. Una sola cuenta, todos los locales controlados.</p>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:#faf5ff">🏪</div>
+        <h3>Múltiples locales</h3>
+        <p>El plan Multi gestiona hasta 3 locales desde una sola cuenta. Perfecto para pequeñas cadenas.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:#f0fdf4">📊</div>
+        <h3>Sin apps adicionales</h3>
+        <p>Todo funciona en Telegram, la app que ya usas cada día. Sin dashboards ni nuevas contraseñas.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── PLANES ─── -->
+<!-- ─── PLANES ───────────────────────────────────────────────── -->
 <section class="plans" id="planes">
   <div class="container">
-    <div class="section-header">
-      <h2>Precios simples y transparentes</h2>
-      <p>Sin permanencia. Cancela cuando quieras.</p>
-    </div>
+    <div class="section-tag">Precios</div>
+    <h2 class="section-title">Elige tu plan</h2>
+    <p class="section-desc">Sin permanencia. Sin sorpresas. Cancela cuando quieras.</p>
+
     <div class="plans__grid">
 
-      <!-- FREE -->
-      <div class="plan-card">
-        <div class="plan-card__header">
-          <div class="plan-card__name">Free</div>
-          <div class="plan-card__price">
-            <span class="plan-card__amount">0€</span>
-            <span class="plan-card__period">/mes</span>
+      <div class="plan">
+        <div class="plan__header">
+          <p class="plan__name">Free</p>
+          <div class="plan__price">
+            <span class="plan__amount">0€</span>
+            <span class="plan__period">/mes</span>
           </div>
-          <p class="plan-card__desc">Para probar sin compromiso</p>
+          <p class="plan__tagline">Para empezar sin compromiso</p>
         </div>
-        <ul class="plan-card__features">
+        <ul class="plan__features">
           <li class="ok">Google Maps</li>
           <li class="ok">Alertas de reseñas negativas</li>
           <li class="ok">1 negocio</li>
-          <li class="no">Borradores IA</li>
-          <li class="no">Resumen de positivas</li>
+          <li class="no">Borradores con IA</li>
+          <li class="no">Resumen diario de positivas</li>
           <li class="no">Múltiples plataformas</li>
         </ul>
         <a href="https://t.me/NegocioSanoBot" class="btn btn--outline btn--full" target="_blank" rel="noopener">
@@ -215,47 +264,45 @@
         </a>
       </div>
 
-      <!-- PRO -->
-      <div class="plan-card plan-card--featured">
-        <div class="plan-card__badge">Más popular</div>
-        <div class="plan-card__header">
-          <div class="plan-card__name">Pro</div>
-          <div class="plan-card__price">
-            <span class="plan-card__amount">29€</span>
-            <span class="plan-card__period">/mes</span>
+      <div class="plan plan--featured">
+        <div class="plan__popular">Más popular</div>
+        <div class="plan__header">
+          <p class="plan__name">Pro</p>
+          <div class="plan__price">
+            <span class="plan__amount">29€</span>
+            <span class="plan__period">/mes</span>
           </div>
-          <p class="plan-card__desc">Para el hostelero activo</p>
+          <p class="plan__tagline">Para el hostelero activo</p>
         </div>
-        <ul class="plan-card__features">
-          <li class="ok">Google Maps · TripAdvisor · Booking</li>
-          <li class="ok">Alertas inmediatas con borrador IA</li>
+        <ul class="plan__features">
+          <li class="ok">Google Maps</li>
+          <li class="ok">Alertas inmediatas <strong>con borrador IA</strong></li>
           <li class="ok">Resumen diario de positivas + borradores</li>
           <li class="ok">1 negocio</li>
           <li class="ok">Tono de respuesta personalizable</li>
-          <li class="ok">Informe PDF semanal <span class="soon">Próximamente</span></li>
+          <li class="soon">Informe PDF semanal <em>Próximamente</em></li>
         </ul>
-        <a href="https://t.me/NegocioSanoBot" class="btn btn--full" target="_blank" rel="noopener">
+        <a href="https://t.me/NegocioSanoBot" class="btn btn--primary btn--full" target="_blank" rel="noopener">
           Contratar Pro →
         </a>
       </div>
 
-      <!-- MULTI -->
-      <div class="plan-card">
-        <div class="plan-card__header">
-          <div class="plan-card__name">Multi</div>
-          <div class="plan-card__price">
-            <span class="plan-card__amount">59€</span>
-            <span class="plan-card__period">/mes</span>
+      <div class="plan">
+        <div class="plan__header">
+          <p class="plan__name">Multi</p>
+          <div class="plan__price">
+            <span class="plan__amount">59€</span>
+            <span class="plan__period">/mes</span>
           </div>
-          <p class="plan-card__desc">Para varios locales</p>
+          <p class="plan__tagline">Para varios locales</p>
         </div>
-        <ul class="plan-card__features">
+        <ul class="plan__features">
           <li class="ok">Todo lo del plan Pro</li>
-          <li class="ok">Hasta 3 locales</li>
-          <li class="ok">Publicación directa en Google <span class="soon">Fase 3</span></li>
-          <li class="ok">Aprobación de respuestas desde Telegram</li>
-          <li class="ok">Soporte prioritario</li>
+          <li class="ok">Hasta 3 negocios</li>
           <li class="ok">Informes consolidados</li>
+          <li class="soon">Publicar en Google directamente <em>Fase 3</em></li>
+          <li class="ok">Soporte prioritario</li>
+          <li class="ok">Aprobación de respuestas desde Telegram</li>
         </ul>
         <a href="https://t.me/NegocioSanoBot" class="btn btn--outline btn--full" target="_blank" rel="noopener">
           Contratar Multi →
@@ -263,128 +310,108 @@
       </div>
 
     </div>
+
+    <p class="plans__note">¿Tienes más de 3 locales? <a href="mailto:hola@negociosano.com">Contáctanos</a> para un plan personalizado.</p>
   </div>
 </section>
 
-<!-- ─── DIFERENCIADORES ─── -->
+<!-- ─── COMPARATIVA ──────────────────────────────────────────── -->
 <section class="compare">
   <div class="container">
-    <div class="section-header">
-      <h2>¿Por qué NegocioSano y no otra herramienta?</h2>
-    </div>
-    <div class="compare__table-wrap">
+    <div class="section-tag">Comparativa</div>
+    <h2 class="section-title">¿Por qué NegocioSano?</h2>
+    <p class="section-desc">Las herramientas genéricas cuestan 200€/mes y están pensadas para agencias, no para el pequeño hostelero.</p>
+    <div class="compare__wrap">
       <table class="compare__table">
         <thead>
           <tr>
             <th></th>
-            <th class="highlight-col">NegocioSano</th>
+            <th class="hl">NegocioSano</th>
             <th>ReviewTrackers, Podium</th>
-            <th>Hacerlo a mano</th>
+            <th>Gestionarlo a mano</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Precio</td>
-            <td class="highlight-col"><strong>29€/mes</strong></td>
-            <td>200–400€/mes</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <td>Alertas inmediatas</td>
-            <td class="highlight-col">✅ Telegram</td>
-            <td>✅ Email</td>
-            <td>❌ Manual</td>
-          </tr>
-          <tr>
-            <td>Borradores IA</td>
-            <td class="highlight-col">✅ Claude AI</td>
-            <td>✅ Básico</td>
-            <td>❌</td>
-          </tr>
-          <tr>
-            <td>Configuración</td>
-            <td class="highlight-col">✅ 5 minutos</td>
-            <td>⚠️ 1–2 horas</td>
-            <td>✅ Inmediato</td>
-          </tr>
-          <tr>
-            <td>Sin app extra</td>
-            <td class="highlight-col">✅ Solo Telegram</td>
-            <td>❌ Dashboard propio</td>
-            <td>✅</td>
-          </tr>
-          <tr>
-            <td>Pensado para España</td>
-            <td class="highlight-col">✅ En español</td>
-            <td>⚠️ Traducido</td>
-            <td>✅</td>
-          </tr>
+          <tr><td>Precio</td><td class="hl"><strong>29€/mes</strong></td><td>200–400€/mes</td><td>0€ pero horas perdidas</td></tr>
+          <tr><td>Alertas inmediatas</td><td class="hl">✅ Telegram</td><td>✅ Email</td><td>❌ Manual</td></tr>
+          <tr><td>Borradores con IA</td><td class="hl">✅ Claude AI</td><td>⚠ Básico</td><td>❌</td></tr>
+          <tr><td>Configuración</td><td class="hl">✅ 5 minutos</td><td>⚠ 1-2 horas</td><td>✅ Inmediata</td></tr>
+          <tr><td>Sin app extra</td><td class="hl">✅ Solo Telegram</td><td>❌ Dashboard propio</td><td>✅</td></tr>
+          <tr><td>En español</td><td class="hl">✅ Nativo</td><td>⚠ Traducido</td><td>✅</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- ─── FAQ ─── -->
+<!-- ─── FAQ ──────────────────────────────────────────────────── -->
 <section class="faq" id="faq">
   <div class="container">
-    <div class="section-header">
-      <h2>Preguntas frecuentes</h2>
-    </div>
-    <div class="faq__list">
+    <div class="section-tag">FAQ</div>
+    <h2 class="section-title">Preguntas frecuentes</h2>
+
+    <div class="faq__grid">
       <details class="faq__item">
         <summary>¿Necesito conocimientos técnicos?</summary>
-        <p>No. Si usas Telegram, puedes usar NegocioSano. El bot te guía paso a paso. Añades tu negocio buscándolo por nombre, sin Place IDs ni código.</p>
+        <p>No. Si usas Telegram, puedes usar NegocioSano. El bot te guía paso a paso con botones, sin tecnicismos. Añades tu negocio buscándolo por nombre, como si buscaras en Google Maps.</p>
       </details>
       <details class="faq__item">
         <summary>¿Con qué plataformas funciona?</summary>
         <p>Ahora mismo con <strong>Google Maps</strong>. TripAdvisor y Booking están en desarrollo activo y llegarán en las próximas semanas para los planes Pro y Multi.</p>
       </details>
       <details class="faq__item">
-        <summary>¿Cómo funcionan los borradores de respuesta?</summary>
-        <p>Cuando llega una reseña negativa, enviamos el texto al modelo de IA Claude (de Anthropic) junto con el nombre y tono de tu negocio. La IA genera una respuesta en menos de 3 segundos. Tú decides si usarla tal cual o ajustarla antes de publicarla en Google.</p>
+        <summary>¿Cómo funcionan los borradores de IA?</summary>
+        <p>Cuando llega una reseña negativa, enviamos el texto al modelo Claude de Anthropic junto con el nombre y tono de tu negocio. La IA genera una respuesta empática y profesional en menos de 3 segundos. Tú decides si copiarla tal cual o ajustarla antes de publicarla en Google.</p>
       </details>
       <details class="faq__item">
-        <summary>¿Puedo cancelar en cualquier momento?</summary>
-        <p>Sí, sin penalizaciones ni permanencia. Cancelas desde el bot con <code>/estado</code> y tu suscripción se mantiene activa hasta el final del período pagado.</p>
+        <summary>¿Puedo cancelar cuando quiera?</summary>
+        <p>Sí, sin penalizaciones ni permanencia. Cancelas desde el bot con <code>/estado</code> y tu suscripción permanece activa hasta el final del período pagado.</p>
       </details>
       <details class="faq__item">
-        <summary>¿Qué incluye el plan gratuito?</summary>
-        <p>El plan gratuito te da alertas de reseñas negativas de Google Maps sin borrador de respuesta. Es permanente, no una prueba. Puedes mejorarlo a Pro cuando quieras.</p>
+        <summary>¿El plan gratuito es temporal?</summary>
+        <p>No, es permanente. El plan Free te da alertas de reseñas negativas de Google Maps sin borrador de respuesta. Sin límite de tiempo. Puedes mejorarlo a Pro cuando quieras.</p>
       </details>
       <details class="faq__item">
-        <summary>¿Funciona si tengo varios locales?</summary>
-        <p>Sí. El plan Multi te permite gestionar hasta 3 locales desde la misma cuenta de Telegram. Cada local recibe sus propias alertas y borradores.</p>
+        <summary>¿Cómo de rápidas son las alertas?</summary>
+        <p>Revisamos Google Maps cada 2 horas. Cuando detectamos una reseña nueva, la alerta llega a tu Telegram en segundos. Es el ciclo más rápido posible dentro de los límites de la API de Google.</p>
       </details>
       <details class="faq__item">
         <summary>¿Mis datos están seguros?</summary>
-        <p>Los datos se almacenan en servidores europeos (Hetzner, Alemania). Solo procesamos los textos de las reseñas públicas de Google. No accedemos a tu cuenta de Google ni a ningún dato privado.</p>
+        <p>Los datos se almacenan en servidores europeos (Hetzner, Alemania). Solo procesamos los textos de reseñas públicas de Google. No accedemos a tu cuenta de Google ni a ningún dato privado.</p>
+      </details>
+      <details class="faq__item">
+        <summary>¿Funciona para cadenas con varios locales?</summary>
+        <p>Sí. El plan Multi gestiona hasta 3 locales desde la misma cuenta de Telegram. Cada local tiene sus propias alertas y borradores, y puedes ver un resumen consolidado de todos.</p>
       </details>
     </div>
   </div>
 </section>
 
-<!-- ─── CTA FINAL ─── -->
+<!-- ─── CTA FINAL ────────────────────────────────────────────── -->
 <section class="cta-final">
   <div class="container">
-    <h2>Empieza a controlar tu reputación hoy</h2>
-    <p>Únete a los negocios que responden a sus reseñas antes que la competencia.</p>
-    <a href="https://t.me/NegocioSanoBot" class="btn btn--lg btn--white" target="_blank" rel="noopener">
-      Empezar gratis en Telegram →
-    </a>
-    <p class="cta-final__note">Sin tarjeta de crédito · Cancela cuando quieras</p>
+    <div class="cta-final__inner">
+      <h2>Empieza a responder más rápido que la competencia</h2>
+      <p>Configúralo en 5 minutos. Sin tarjeta de crédito. Sin compromiso.</p>
+      <a href="https://t.me/NegocioSanoBot" class="btn btn--lg btn--white" target="_blank" rel="noopener">
+        Abrir NegocioSano en Telegram →
+      </a>
+    </div>
   </div>
 </section>
 
-<!-- ─── FOOTER ─── -->
+<!-- ─── FOOTER ───────────────────────────────────────────────── -->
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <span class="nav__logo-icon">🌿</span>
-      <strong>NegocioSano</strong>
+      <div class="footer__logo">
+        <span class="logo-mark logo-mark--sm">NS</span>
+        <strong>NegocioSano</strong>
+      </div>
       <p>Gestión de reputación online para negocios españoles.</p>
+      <a href="mailto:hola@negociosano.com">hola@negociosano.com</a>
     </div>
-    <div class="footer__links">
+    <div class="footer__cols">
       <div>
         <strong>Producto</strong>
         <a href="#como-funciona">Cómo funciona</a>
@@ -392,53 +419,48 @@
         <a href="#faq">FAQ</a>
       </div>
       <div>
-        <strong>Contacto</strong>
-        <a href="mailto:hola@negociosano.com">hola@negociosano.com</a>
-        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener">Telegram</a>
+        <strong>Acceso</strong>
+        <a href="https://t.me/NegocioSanoBot" target="_blank" rel="noopener">Abrir bot Telegram</a>
+        <a href="https://api.negociosano.com/payment/success">Activar cuenta</a>
       </div>
       <div>
         <strong>Legal</strong>
         <a href="/legal/privacidad.html">Privacidad</a>
         <a href="/legal/terminos.html">Términos</a>
+        <a href="/legal/cookies.html">Cookies</a>
       </div>
     </div>
   </div>
   <div class="footer__bottom">
-    <p>© 2026 NegocioSano · Hecho con ☕ en España</p>
+    <div class="container">
+      <p>© 2026 NegocioSano · Hecho con ☕ en España · Servidores en 🇩🇪 Alemania</p>
+    </div>
   </div>
 </footer>
 
 <script>
-  // Mobile menu
-  const burger = document.getElementById('burger');
-  const menu = document.getElementById('mobileMenu');
-  burger.addEventListener('click', () => {
-    menu.classList.toggle('open');
-    burger.classList.toggle('active');
-  });
-  menu.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      menu.classList.remove('open');
-      burger.classList.remove('active');
-    });
-  });
+// Mobile menu
+const burger = document.getElementById('burger');
+const menu = document.getElementById('mobileMenu');
+burger.addEventListener('click', () => {
+  menu.classList.toggle('open');
+  burger.classList.toggle('active');
+});
+menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  menu.classList.remove('open'); burger.classList.remove('active');
+}));
 
-  // Smooth scroll
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
+// Sticky nav
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), {passive: true});
 
-  // Sticky nav shadow on scroll
-  const nav = document.querySelector('.nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('nav--scrolled', window.scrollY > 20);
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el) { e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
   });
+});
 </script>
 </body>
 </html>

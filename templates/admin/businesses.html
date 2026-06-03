@@ -1,70 +1,104 @@
 {% extends "admin/base.html" %}
 {% set active = "businesses" %}
 {% block title %}Negocios{% endblock %}
-{% block heading %}Negocios ({{ businesses | length }}){% endblock %}
+{% block heading %}Negocios{% endblock %}
+{% block subheading_text %}{{ businesses | length }} negocios registrados en el sistema{% endblock %}
 
 {% block actions %}
 <form method="post" action="/admin/poll/all">
-  <button type="submit" class="bg-brand text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-brand-dark transition">
-    🔄 Polling de todos
+  <button type="submit" onclick="return confirmAction('¿Lanzar polling de todos los negocios ahora?')"
+    class="flex items-center gap-2 bg-brand text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-brand-dark transition shadow-sm">
+    🔄 Polling global
   </button>
 </form>
 {% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-  <table class="w-full text-sm">
-    <thead class="bg-gray-50 border-b border-gray-200">
-      <tr>
-        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Negocio</th>
-        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Propietario</th>
-        <th class="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Plan</th>
-        <th class="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Reseñas</th>
-        <th class="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Estado</th>
-        <th class="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Verificado</th>
-        <th class="px-4 py-3"></th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-100">
-      {% for b in businesses %}
-      <tr class="hover:bg-gray-50">
-        <td class="px-4 py-3">
-          <p class="font-medium text-gray-900">{{ b.name }}</p>
-          <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ b.place_id[:20] }}…</p>
-        </td>
-        <td class="px-4 py-3 text-gray-600">{{ b.email }}</td>
-        <td class="px-4 py-3 text-center">
-          {% if b.plan == 'multi' %}
-            <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">Multi</span>
-          {% elif b.plan == 'pro' %}
-            <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">Pro</span>
-          {% else %}
-            <span class="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-0.5 rounded-full">Free</span>
-          {% endif %}
-        </td>
-        <td class="px-4 py-3 text-center font-medium">{{ b.review_count }}</td>
-        <td class="px-4 py-3 text-center">
-          {% if b.is_paused %}
-            <span class="text-yellow-600 text-xs">⏸ Pausado</span>
-          {% else %}
-            <span class="text-green-600 text-xs">▶ Activo</span>
-          {% endif %}
-        </td>
-        <td class="px-4 py-3 text-center">
-          {% if b.verified %}<span class="text-green-600">✓</span>{% else %}<span class="text-gray-300">—</span>{% endif %}
-        </td>
-        <td class="px-4 py-3 text-right">
-          <form method="post" action="/admin/poll/{{ b.id }}" class="inline">
-            <button type="submit" class="text-xs text-brand hover:text-brand-dark font-medium">
-              🔄 Polling
-            </button>
-          </form>
-        </td>
-      </tr>
-      {% else %}
-      <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No hay negocios registrados.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-gray-200 bg-gray-50">
+          <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Negocio</th>
+          <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Propietario</th>
+          <th class="text-center px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Plan</th>
+          <th class="text-center px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Reseñas</th>
+          <th class="text-center px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Estado</th>
+          <th class="text-right px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in businesses %}
+        <tr class="table-row border-b border-gray-100 last:border-0">
+          <td class="px-5 py-4">
+            <p class="font-semibold text-gray-900">{{ b.name }}</p>
+            <p class="text-xs text-gray-400 font-mono mt-0.5">{{ b.place_id[:28] }}{% if b.place_id | length > 28 %}…{% endif %}</p>
+            {% if not b.verified %}
+            <span class="text-xs text-amber-600">⚠ Sin verificar</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-4">
+            <p class="text-gray-700">{{ b.email }}</p>
+            {% if not b.owner_active %}
+            <span class="text-xs text-red-500 font-medium">Usuario bloqueado</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-4 text-center">
+            {% if b.plan == 'multi' %}
+              <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full">Multi</span>
+            {% elif b.plan == 'pro' %}
+              <span class="inline-flex items-center bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">Pro</span>
+            {% else %}
+              <span class="inline-flex items-center bg-gray-100 text-gray-600 text-xs font-semibold px-2.5 py-1 rounded-full">Free</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-4 text-center">
+            <span class="font-semibold text-gray-900">{{ b.review_count }}</span>
+          </td>
+          <td class="px-5 py-4 text-center">
+            {% if b.is_paused %}
+              <span class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full">⏸ Pausado</span>
+            {% else %}
+              <span class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">▶ Activo</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-4">
+            <div class="flex items-center justify-end gap-2">
+              <!-- Poll -->
+              <form method="post" action="/admin/poll/{{ b.id }}">
+                <button type="submit" title="Forzar polling" class="text-xs font-medium text-brand hover:text-brand-dark px-2.5 py-1.5 rounded-lg hover:bg-green-50 transition">
+                  🔄
+                </button>
+              </form>
+              <!-- Pause / Resume -->
+              {% if b.is_paused %}
+              <form method="post" action="/admin/businesses/{{ b.id }}/resume">
+                <button type="submit" title="Reactivar" class="text-xs font-medium text-amber-600 hover:text-amber-700 px-2.5 py-1.5 rounded-lg hover:bg-amber-50 transition">
+                  ▶ Activar
+                </button>
+              </form>
+              {% else %}
+              <form method="post" action="/admin/businesses/{{ b.id }}/pause">
+                <button type="submit" title="Pausar" class="text-xs font-medium text-gray-500 hover:text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition">
+                  ⏸ Pausar
+                </button>
+              </form>
+              {% endif %}
+              <!-- Delete -->
+              <form method="post" action="/admin/businesses/{{ b.id }}/delete"
+                    onsubmit="return confirmAction('¿Eliminar «{{ b.name }}»? Se borrarán todas sus reseñas y alertas. Esta acción es irreversible.')">
+                <button type="submit" title="Eliminar" class="text-xs font-medium text-red-500 hover:text-red-700 px-2.5 py-1.5 rounded-lg hover:bg-red-50 transition">
+                  🗑 Eliminar
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="px-5 py-12 text-center text-gray-400">No hay negocios registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
