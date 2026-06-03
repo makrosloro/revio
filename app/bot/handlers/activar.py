@@ -26,13 +26,15 @@ async def run_activar(update: Update, context: ContextTypes.DEFAULT_TYPE, token:
 
             if not user:
                 await update.effective_message.reply_text(
-                    "Token no válido. Revisa el email o usa /suscribir para obtener uno nuevo."
+                    "Token no válido o ya usado.\n"
+                    "Pide uno nuevo con /reenviar tu@email.com"
                 )
                 return
 
             if user.token_expires_at and user.token_expires_at < datetime.now(timezone.utc):
                 await update.effective_message.reply_text(
-                    "El token ha caducado (válido 48h). Usa /suscribir para renovarlo."
+                    "El token ha caducado (válido 48h).\n"
+                    "Pide uno nuevo con /reenviar tu@email.com"
                 )
                 return
 
