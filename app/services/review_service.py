@@ -34,42 +34,52 @@ def _build_negative_alert_free(business_name: str, review: Review) -> str:
     )
 
 
-def _build_negative_alert_pro(business_name: str, review: Review) -> str:
+def _build_negative_alert_pro(business_name: str, review: Review, draft: str = "") -> str:
     text_preview = f'"{review.text[:200]}"' if review.text else "(sin texto)"
+    draft_section = f"\n\n💬 Borrador de respuesta:\n{draft}" if draft else ""
     return (
         f"🔴 Nueva reseña negativa — {business_name}\n\n"
         f"⭐ {review.rating}/5 · {review.author_name} · {_format_date(review.published_at)}\n"
         f"📍 Google Maps\n\n"
-        f"{text_preview}"
+        f"{text_preview}{draft_section}"
     )
 
 
-def _build_daily_digest(business_name: str, reviews: list[Review]) -> str:
+def _build_daily_digest(
+    business_name: str,
+    reviews: list[Review],
+    drafts: dict[int, str] | None = None,
+) -> str:
     top = reviews[:5]
+    drafts = drafts or {}
     lines = []
     for r in top:
         stars = "⭐" * r.rating
-        snippet = f'"{r.text[:80]}..."' if r.text and len(r.text) > 80 else (f'"{r.text}"' if r.text else "")
-        lines.append(f"{stars} {r.author_name} · {snippet}")
+        snippet = f'"{r.text[:100]}..."' if r.text and len(r.text) > 100 else (f'"{r.text}"' if r.text else "")
+        lines.append(f"{stars} {r.author_name}\n{snippet}")
+        if r.id in drafts:
+            lines.append(f"💬 Borrador: {drafts[r.id]}")
+        lines.append("")
 
-    body = "\n".join(lines)
+    body = "\n".join(lines).rstrip()
     extra = f"\ny {len(reviews) - 5} más." if len(reviews) > 5 else ""
 
     return (
         f"🌟 Resumen de hoy — {business_name}\n\n"
         f"Has recibido {len(reviews)} reseña(s) positiva(s):\n\n"
         f"{body}{extra}\n\n"
-        f"💡 Responder a las buenas también mejora tu ranking en Google.\n"
-        f"Usa /responder para ver borradores de respuesta."
+        f"Usa /responder para regenerar cualquier borrador."
     )
 
 
 async def poll_all_businesses() -> None:
     """Poll Google Places for every active business and dispatch alerts."""
     from app.bot import get_application
+    from app.integrations.anthropic_client import get_anthropic_client
     from app.repositories.alert_log_repo import create as create_alert_log
 
     logger.info("Iniciando ciclo de polling de reseñas")
+    anthropic = get_anthropic_client()
 
     async with AsyncSessionLocal() as session:
         businesses = await business_repo.get_all_active(session)
@@ -118,8 +128,13 @@ async def poll_all_businesses() -> None:
                     is_active_sub = user.sub_status == "active"
                     try:
                         bot_app = get_application()
+                        draft = ""
+                        draft_tokens = 0
                         if user.plan in ("pro", "multi") and is_active_sub:
-                            msg = _build_negative_alert_pro(business.name, review)
+                            draft, draft_tokens = await anthropic.generate_negative_draft(
+                                review, business
+                            )
+                            msg = _build_negative_alert_pro(business.name, review, draft)
                         else:
                             msg = _build_negative_alert_free(business.name, review)
 
@@ -131,6 +146,8 @@ async def poll_all_businesses() -> None:
                             review_id=review.id,
                             telegram_message_id=sent.message_id,
                             alert_type="negative_immediate",
+                            draft_type="negative" if draft else None,
+                            ai_draft_tokens=draft_tokens if draft_tokens else None,
                         )
                     except Exception:
                         logger.exception(
@@ -142,12 +159,14 @@ async def poll_all_businesses() -> None:
 
 
 async def send_daily_digest() -> None:
-    """Send the daily digest of positive reviews to Pro/Multi users."""
+    """Send the daily digest of positive reviews with AI drafts to Pro/Multi users."""
     from app.bot import get_application
+    from app.integrations.anthropic_client import get_anthropic_client
     from app.repositories.user_repo import get_all_active_subscribers
 
     logger.info("Iniciando resumen diario de positivas")
     today = date.today()
+    anthropic = get_anthropic_client()
 
     async with AsyncSessionLocal() as session:
         users = await get_all_active_subscribers(session)
@@ -171,14 +190,21 @@ async def send_daily_digest() -> None:
                 if not positives:
                     continue
 
-                msg = _build_daily_digest(business.name, positives)
+                # Generate drafts for up to 5 reviews to control costs
+                drafts: dict[int, str] = {}
+                for r in positives[:5]:
+                    draft, _ = await anthropic.generate_positive_draft(r, business)
+                    if draft:
+                        drafts[r.id] = draft
+
+                msg = _build_daily_digest(business.name, positives, drafts)
                 try:
                     bot_app = get_application()
                     await bot_app.bot.send_message(chat_id=user.telegram_user_id, text=msg)
                     await review_repo.mark_digest_sent(session, [r.id for r in positives])
                     logger.info(
-                        "Resumen diario enviado a user_id=%d business_id=%d (%d positivas)",
-                        user.id, business.id, len(positives),
+                        "Resumen diario enviado a user_id=%d business_id=%d (%d positivas, %d borradores)",
+                        user.id, business.id, len(positives), len(drafts),
                     )
                 except Exception:
                     logger.exception(
