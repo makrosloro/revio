@@ -12,7 +12,7 @@ anthropic==0.40.0
 apscheduler==3.10.4
 python-dotenv==1.0.1
 aiosqlite==0.20.0
-playwright==1.49.0
+playwright==1.60.0
 reportlab==4.2.5
 pytest==8.3.4
 pytest-asyncio==0.24.0
